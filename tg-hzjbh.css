@@ -1,0 +1,33 @@
+﻿body{ background:#fff;}
+.image-box{position:relative;display:block;overflow:hidden;}
+.image-box img{position:absolute;left:0;top:0;height:100%;}
+
+
+.top-apply{ position:relative; display:-webkit-flex; display:-ms-flexbox; display:flex; margin:2px 0 0; padding:.06rem .1rem; background:#a30110;}
+.top-apply .input-box{ -webkit-flex:auto; -ms-flex:auto; flex:auto; border:3px solid #fff008; border-right:0 none;}
+.top-apply .form-input{ display:block; width:100%; height:.38rem; line-height:.2rem; padding:.09rem; font-size:.126rem; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;}
+.top-apply .apply-btn{ -webkit-flex-basis:.98rem; -ms-flex-basis:.98rem; flex-basis:.98rem; line-height:.38rem; text-align:center; font-size:.13rem; color:#fff; background:#d7011e; border:3px solid #fff008;}
+.top-apply .apply-btn .icon{ position:relative; display:inline-block; width:.13rem; height:.13rem; margin-bottom:-1px; margin-left:.08rem; background:#fff; border-radius:.13rem;}
+.top-apply .apply-btn .icon::before{ content:""; position:absolute; left:50%; top:50%; width:0; height:0; margin:-.028rem 0 0 -.015rem; border-width:.028rem .05rem; border-style:dashed dashed dashed solid; border-color:transparent transparent transparent #fe8438;}
+
+
+.mt-10{ margin-top:.1rem;}
+.mt-15{ margin-top:.15rem;}
+.img-list{ padding:.1rem;}
+.img-list1{ padding:0 .05rem;}
+
+.fixed-wrap{position:relative; height:.8rem; margin-top:.05rem;}
+.fixed-box{ position:fixed; left:50%; bottom:0; width:100%; max-width:640px; display:-webkit-flex; display:-ms-flexbox; display:flex; padding:.1rem .2rem .08rem .7rem; background:#480f0e; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; -webkit-transform: translate3D(-50%,.8rem,0); -moz-transform: translate3D(-50%,.8rem,0); -ms-transform: translate3D(-50%,.8rem,0); -o-transform: translate3D(-50%,.8rem,0); transform: translate3D(-50%,.8rem,0);  -webkit-transition: all .5s; -moz-transition: all .5s; -ms-transition: all .5s; -o-transition: all .5s; transition: all .5s; opacity:0;}
+.fixed-box.show{ -webkit-transform: translate3D(-50%,0,0); -moz-transform: translate3D(-50%,0,0); -ms-transform: translate3D(-50%,0,0); -o-transform: translate3D(-50%,0,0); transform: translate3D(-50%,0,0); opacity:1;}
+[devices="ipad"] .fixed-box{ max-width:none; left:0; right:auto; -webkit-transform: translate3D(0,0,0); -moz-transform: translate3D(0,0,0); -ms-transform: translate3D(0,0,0); -o-transform: translate3D(0,0,0); transform: translate3D(0,0,0);}
+.fixed-box .user-image{ position:absolute; left:.08rem; bottom:0; width:.57rem; height:.8rem; background:url(//mued3.jia.com/image/mobile/tg/tg-theme-icon.png) 0 0 no-repeat; background-size:100%;}
+.fixed-box .input-box{ -webkit-flex:auto; -ms-flex:auto; flex:auto; padding:.09rem; background:#fff;}
+.fixed-box .form-input{ display:block; width:100%; height:.2rem; line-height:.2rem; font-size:.126rem;}
+.fixed-box .fixed-btn{ -webkit-flex:0 0 .98rem; -ms-flex:0 0 .98rem; flex:0 0 .98rem; margin-left:.04rem; line-height:.38rem; text-align:center; font-size:.14rem; color:#fff; font-weight:bold; background:#fe8438;}
+.fixed-box .fixed-btn .icon{ position:relative; display:inline-block; width:.13rem; height:.13rem; margin-bottom:-1px; margin-left:.08rem; background:#fff; border-radius:.13rem;}
+.fixed-box .fixed-btn .icon::before{ content:""; position:absolute; left:50%; top:50%; width:0; height:0; margin:-.028rem 0 0 -.015rem; border-width:.028rem .05rem; border-style:dashed dashed dashed solid; border-color:transparent transparent transparent #fe8438;}
+.fixed-box .close{ position:absolute; right:.02rem; top:.01rem; width:.12rem; height:.12rem; background:url(//mued3.jia.com/image/mobile/tg/tg-theme-close.png) 0 0 no-repeat; background-size:100%;}
+
+
+.commonLoading{ width:100%; max-width:640px; left:50%; right:auto; -webkit-transform: translateX(-50%); -moz-transform: translateX(-50%); -ms-transform: translateX(-50%); -o-transform: translateX(-50%); transform: translateX(-50%);}
+[devices="ipad"] .commonLoading{ max-width:none; left:0; right:auto; -webkit-transform: translateX(0); -moz-transform: translateX(0); -ms-transform: translateX(0); -o-transform: translateX(0); transform: translateX(0);}
