@@ -1,0 +1,7 @@
+.box{
+    position:relative;
+    height:200px;
+    background-image: -webkit-radial-gradient(top,circle,#fff 50%,#ff8e8e 50%);background-image: -moz-radial-gradient(top,circle,#fff 50%,#ff8e8e 50%); background-image: radial-gradient(circle at top,#fff 50%,#ff8e8e 50%);
+    background-size:32px 12px;
+    background-repeat:repeat-x;
+    background-color:#ff8e8e;}
