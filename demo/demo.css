@@ -1,0 +1,3 @@
+.demo-list{margin:10px; line-height:20px; font-size:14px;}
+.demo-list a:link,.demo-list a:visited{ color:orange; text-decoration:underline;}
+.demo-list a:hover,.demo-list a:active{ color:gray;}
