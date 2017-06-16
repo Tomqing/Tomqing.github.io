@@ -1,2 +1,0 @@
-1.要新录入数据是在data.php里，拷贝,array('id'=>12,'name'=>'Product','img'=>'images/12.jpg','url'=>'detail.html?id=12')然后把12改成接下去的数据。
-2.图片都是以数字从小到大命名，放在images里。
