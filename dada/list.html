@@ -30,8 +30,9 @@
     <p>Whatsapp:+86 18606888318</p>
     <p>Email:1486212836@qq.com</p>
 </div>
+<script src="data.html"></script>
 <script type="text/javascript">
-    $.ajax({
+ /*   $.ajax({
         type: "post",
         url: "data.php?type=2",
         dataType: "json",
@@ -53,8 +54,20 @@
         error: function () {
            alert("系统繁忙，请稍后再试！");
         }
-    });
+    });*/
     $(function() {
+        var prostr="";
+        var j=0;
+        for(var i in productAllArr){
+            console.log(productAllArr[i]);
+            j++;
+            if(j%5==0){
+                prostr+='<li class="material-product-li" style="margin-right:0;"><a href="'+productAllArr[i].url+'"><img src="'+productAllArr[i].img+'" /><p class="product-name">'+productAllArr[i].name+'</p></a></li>';
+            }else{
+                prostr+='<li class="material-product-li"><a href="'+productAllArr[i].url+'"><img src="'+productAllArr[i].img+'" /><p class="product-name">'+productAllArr[i].name+'</p></a></li>';
+            }
+        }
+        $(".material-product-ul").append(prostr);
         var navTop1 = $(".met-nav-sec").length>0?$(".met-nav-sec").offset().top:0;
         $(window).scroll(function(){
             var scrollTop = $(window).scrollTop();
