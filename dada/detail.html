@@ -16,8 +16,8 @@
 <div class="nav-sec-box">
     <div class="met-nav-sec">
         <ul class="navbar-nav clearfix">
-            <li><a href="./dada/index.html" title="首页" class="link">Home</a></li>
-            <li><a href="./dada/list.html" title="全部商品" class="link">All product</a></li>
+            <li><a href="index.html" title="首页" class="link">Home</a></li>
+            <li><a href="list.html" title="全部商品" class="link">All product</a></li>
         </ul>
     </div>
 </div>
@@ -70,7 +70,7 @@
     })();
     $.ajax({
         type: "post",
-        url: "./dada/data.php?type=1&id="+(urlHrefObject.id-1),
+        url: "data.php?type=1&id="+(urlHrefObject.id-1),
         dataType: "json",
         success: function (data) {
            $(".product-img img,.detail-img").attr("src",data.img);
