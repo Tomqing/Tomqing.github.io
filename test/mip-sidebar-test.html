@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,minimal-ui">
-    <title>卫生间装修完毕，忘了丢地漏？</title>
+    <title>mip-sidebar-test</title>
     <link rel="stylesheet" type="text/css" href="https://mipcache.bdstatic.com/static/v1/mip.css">
     <link rel="canonical" href="http://m.jia.com/zixun/article/523790.html">
     <style mip-custom>
@@ -13,22 +13,11 @@
         article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}
         html {height:100%;font-size:625%;line-height:1.5;background-color:#f0f0f0;-ms-text-size-adjust:100%; -webkit-text-size-adjust: 100%;  -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -o-user-select: none; user-select: none;}
         body{min-height:100%; max-width:640px; margin:0 auto; font-size: .14rem; color:#333;font-family:"Microsoft YaHei","Helvetica","Helvetica Neue";}
-        ul,ol,li,dl,dt,dd { list-style-type: none;}
-        .clearfix:before,.clearfix:after {display: table;content:'';}
-        .clearfix:after { clear: both; }
-        .clearfix { *zoom:1;}
-        i,em{ font-style:normal}
-        .pr{ position:absolute; right:0; top:0;}
-        .pl{ position:absolute; left:0; top:0;}
-        .fl{float:left;}
-        .fr{float:right;}
-
         .fixed-hb-right { top: 50%; right: 0; -webkit-transform: translateY(-50%); -ms-transform: translateY(-50%); transform: translateY(-50%);}
         .fixed-hb-right .hb-box{ position: relative; padding: .05rem .08rem; line-height: .2rem; font-size: .13rem; color: #fff; border-radius: .3rem 0 0 .3rem; background: orange; overflow:hidden;}
         #hb-sidebar{ background:#fff;}
         #hb-sidebar .hb-popup{ width:600px; height:300px;}
         #hb-sidebar .hb-popup .close{ position:absolute; right:.1rem; top:.1rem; padding:0 .1rem; font-size:.26rem;}
-
         .fixed-wrap .bottom{ padding: .05rem .08rem; line-height: .2rem; text-align:center; font-size: .15rem; color: #fff; background: orange; overflow:hidden;}
     </style>
 </head>
@@ -38,7 +27,7 @@
 <mip-fixed type="right" class="fixed-hb-right">
     <div class="hb-box fix-right-hb" on="tap:hb-sidebar.toggle" data-click="">右侧fixed</div>
 </mip-fixed>
-<!-- 红包2 -->
+
 <mip-sidebar id="hb-sidebar" layout="nodisplay" side="right" class="mip-hidden">
     <div class="hb-popup">
         <em class="close" on="tap:hb-sidebar.toggle">×</em>
