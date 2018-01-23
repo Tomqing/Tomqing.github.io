@@ -15,10 +15,18 @@
         body{min-height:100%; max-width:640px; margin:0 auto; font-size: .14rem; color:#333;font-family:"Microsoft YaHei","Helvetica","Helvetica Neue";}
         .fixed-hb-right { top: 50%; right: 0; -webkit-transform: translateY(-50%); -ms-transform: translateY(-50%); transform: translateY(-50%);}
         .fixed-hb-right .hb-box{ position: relative; padding: .05rem .08rem; line-height: .2rem; font-size: .13rem; color: #fff; border-radius: .3rem 0 0 .3rem; background: orange; overflow:hidden;}
-        #hb-sidebar{ background:#fff;}
+        #hb-sidebar{ background:#fff; z-index:100002 !important;}
         #hb-sidebar .hb-popup{ width:600px; height:300px;}
         #hb-sidebar .hb-popup .close{ position:absolute; right:.1rem; top:.1rem; padding:0 .1rem; font-size:.26rem;}
         .fixed-wrap .bottom{ padding: .05rem .08rem; line-height: .2rem; text-align:center; font-size: .15rem; color: #fff; background: orange; overflow:hidden;}
+        #zx-lightbox{ top:50% !important;-webkit-transform:translateY(-50%);-moz-transform:translateY(-50%);transform:translateY(-50%);}
+        .lightbox{width:90%; margin:0 auto;padding:.2rem; background:#fff; border-radius:.05rem; -webkit-box-sizing:border-box; box-sizing:border-box;}
+        .lightbox .input-box{display:block;position:relative;padding:.08rem .1rem;line-height:.2rem;background:#f2f2f2;margin-bottom:.1rem;border-radius:.05rem;}
+        .lightbox .form-input,.lightbox .common-select{font-size:.1244rem;display:block;width:100%;height:.2rem;line-height:.2rem;padding:0;background:#f2f2f2;border-radius:.05rem;border:none;}
+        .lightbox .yusuan-box .input-box{width:31.6%;float:left;box-sizing:border-box;margin:0 2.6% 0 0;}
+        .lightbox .yusuan-box .input-box:last-of-type{margin-right:0;}
+        .MIP-SIDEBAR-MASK{ z-index:100001 !important;}
+        #MIP-LLIGTBOX-MASK{background:rgba(0,0,0,0.4)}
     </style>
 </head>
 <body>
@@ -37,9 +45,20 @@
 
 <aside class="fixed-wrap">
     <mip-fixed type="bottom">
-        <div class="bottom">底部按钮fixed</div>
+        <div class="bottom" on="tap:zx-lightbox.toggle">底部按钮fixed</div>
     </mip-fixed>
 </aside>
+
+<mip-lightbox id="zx-lightbox" layout="nodisplay" class="mip-hidden">
+    <div class="lightbox">
+        <mip-form method="post" target="_self" url="https://m.jia.com/new_zhuangxiu/yusuanApply">
+            <em class="close" on="tap:zx-lightbox.toggle"></em>
+            <div class="input-box">
+                <input type="tel" class="form-input" id="zxMobile" name="mobile" request="true" validatereg="^1[3|4|5|7|8]\d{9}$" maxlength="11" placeholder="您的手机号" errortxt="手机号不能为空"  regtxt="手机号不符合规范">
+            </div>
+        </mip-form>
+    </div>
+</mip-lightbox>
 
 
 <script src="https://mipcache.bdstatic.com/static/v1/mip.js"></script>
