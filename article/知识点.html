@@ -683,6 +683,10 @@
     .markdown-body .anchor:focus {
         outline: none;
     }
+    .markdown-body a {
+        color: #0366d6;
+        text-decoration: none;
+    }
 
     .markdown-body p,
     .markdown-body blockquote,
@@ -1139,7 +1143,8 @@
                     <li>闭包<br>
                         要理解闭包，首先要知道javascript的作用域。通常javascript作用域分为全局作用域和函数内作用域，通常来说一个函数执行开始到结束也意味着一个作用域的创建到销毁，如果函数A内变量被引用，则A会在内存中驻留一段时间直至A内变量都被释放，我们就可以将这个函数作用域称之为闭包。也可以这么说，闭包是函数作用域的一种使用方式的实现。使用闭包会引起内存升高，应尽量规避闭包，使用let替代var是一种非常好的方式。因为let的作用域是大括号内。
                     </li>
-                    <li>继承和原型</li>
+                    <li>继承和原型<br>
+                        <a href="https://juejin.im/post/5a944f485188257a804aba6d" target="_blank">JavaScript 原型</a></li>
                     <li>解决回调地狱</li>
                     <li>this<br>
                         this即是句柄，谁执行谁就是this
