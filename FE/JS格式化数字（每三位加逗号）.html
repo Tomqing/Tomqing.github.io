@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content=""/>
+    <meta name="description" content=""/>
+    <meta name="format-detection" content="email=no,address=no,telephone=no"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui"/>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/demo.css"/>
+</head>
+<body>
+<ul class="demo-list">
+    <li>
+        "15000000".split("").reverse().join("").replace(/(\d{3})/g, "$1,").split("").reverse().join("");
+    </li>
+    <li>
+        "115000000".split("").reverse().join("").replace(/(\d{3})(?=[^$])/g, "$1,").split("").reverse().join("");
+    </li>
+    <li>
+        '1500000000000'.replace(/\B(?=(\d{3})+$)/g,',')
+    </li>
+    <li>
+        function formatNumber(value) {
+            value = value.toString();
+            if (value.length <= 3) {
+                return value;
+            } else {
+                return formatNumber(value.substr(0, value.length - 3)) + ',' + value.substr(value.length - 3);
+            }
+        }
+        console.log(formatNumber(12345678))
+    </li>
+    <li>
+        var cutStr = function(str){
+            var newStr= new Array(str.length+ parseInt(str.length/3));
+            newStr[newStr.length-1]=str[str.length-1];
+            var currentIndex=str.length-1;
+            for(var i = newStr.length-1;i >= 0;i--)
+            {
+                if((newStr.length-i)%4==0){
+                    newStr[i]=",";
+                }
+                else{
+                    newStr[i]=str[currentIndex--];
+                }
+            }
+            return newStr.join("")
+        }
+        var num="15000000";
+        console.log(cutStr(num));
+    </li>
+    <li>
+        function cutStr(num) {
+            return (num || 0).toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
+        }
+    </li>
+    <li>
+        function cutStr(num) {
+            var num = (num || 0).toString(), result = '';
+            while (num.length > 3) {
+                result = ',' + num.slice(-3) + result;
+                num = num.slice(0, num.length - 3);
+            }
+            if (num) { result = num + result; }
+            return result;
+        }
+    </li>
+</ul>
+<script type="text/javascript" src="/js/zepto-min.js"></script>
+</body>
+</html>
