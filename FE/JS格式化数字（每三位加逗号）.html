@@ -12,17 +12,21 @@
     <link rel="stylesheet" href="/css/demo.css"/>
 </head>
 <body>
+<style type="text/css">
+    li{ white-space: pre-wrap;}
+</style>
 <ul class="demo-list">
     <li>
-        "15000000".split("").reverse().join("").replace(/(\d{3})/g, "$1,").split("").reverse().join("");
+        1) "15000000".split("").reverse().join("").replace(/(\d{3})/g, "$1,").split("").reverse().join("");
     </li>
     <li>
-        "115000000".split("").reverse().join("").replace(/(\d{3})(?=[^$])/g, "$1,").split("").reverse().join("");
+        2) "115000000".split("").reverse().join("").replace(/(\d{3})(?=[^$])/g, "$1,").split("").reverse().join("");
     </li>
     <li>
-        '1500000000000'.replace(/\B(?=(\d{3})+$)/g,',')
+        3) '1500000000000'.replace(/\B(?=(\d{3})+$)/g,',')
     </li>
     <li>
+        4)
         function formatNumber(value) {
             value = value.toString();
             if (value.length <= 3) {
@@ -34,6 +38,7 @@
         console.log(formatNumber(12345678))
     </li>
     <li>
+        5)
         var cutStr = function(str){
             var newStr= new Array(str.length+ parseInt(str.length/3));
             newStr[newStr.length-1]=str[str.length-1];
@@ -53,11 +58,13 @@
         console.log(cutStr(num));
     </li>
     <li>
+        6)
         function cutStr(num) {
             return (num || 0).toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
         }
     </li>
     <li>
+        7)
         function cutStr(num) {
             var num = (num || 0).toString(), result = '';
             while (num.length > 3) {
