@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content=""/>
+    <meta name="description" content=""/>
+    <meta name="format-detection" content="email=no,address=no,telephone=no"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui"/>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/demo.css"/>
+    <style type="text/css" rel="stylesheet">
+        li{ white-space: pre-wrap; list-style: decimal}
+        p{ font-weight:bold; color:#369; font-size:16px;}
+    </style>
+</head>
+<body>
+<ul class="demo-list">
+    <li><p>concat()</p>
+        语法：arrayObject.concat(arrayX,arrayX,......,arrayX)
+        输入值： 输入值可以是单个元素（多个元素），也可以是单个数组（多个数组）
+        功能：连接两个或多个数组
+        返回值：返回被连接数组的一个副本
+        不改变原数组
+    </li>
+    <li><p>join()</p>
+        语法：arrayObject.join(separator)
+        输入值：分隔符
+        功能：把数组中的所有元素放入一个字符串中
+        返回值：返回一个字符串。该字符串是通过把 arrayObject 的每个元素转换为字符串，然后把这些字符串连接起来，在两个元素之间插入 separator 字符串而生成的
+        不改变原数组
+    </li>
+    <li><p>slice()</p>
+        语法：arrayObject.slice(start,end)---包括start但不包括end，没有找到元素，则返回空的数组
+        输入值：
+        返回值：返回一个新的数组，包含从 start 到 end （不包括该元素）的 arrayObject 中的元素
+        不改变原数组
+    </li>
+    <li><p>toString()</p>
+        语法：booleanObject.toString()
+        输入值：无
+        功能：把一个逻辑值转换为字符串，并返回结果
+        返回值：根据原始布尔值或者booleanObject对象的值返回字符串"true"或“false”
+        不改变原数组
+    </li>
+    <li><p>pop()</p>
+        语法：arrayObject.pop()
+        输入值：无
+        功能：用于删除并返回数组的最后一个元素
+        返回值：被删除的元素；如果是空数组则不改变数组，返回undefined
+        改变原数组
+    </li>
+    <li><p>push()</p>
+        语法：arrayObject.push(newelement1,newelement2,....,newelementX)
+        输入值：
+        功能：想数组的末尾添加一个或多个元素
+        返回值：把指定的值添加到数组之后的新长度
+        改变原数组
+    </li>
+    <li><p>shift()</p>
+        语法：arrayObject.shift()
+        输入值：无
+        功能：把数组的第一个元素从其中删除
+        返回值：数组原来的第一个元素的值
+        改变原数组
+    </li>
+    <li><p>unshift()</p>
+        语法：arrayObject.unshift(newelement1,newelement2,....,newelementX)
+        输入值：
+        功能：向数组的开头添加一个或多个元素
+        返回值：返回数组的新长度
+        改变原数组
+    </li>
+    <li><p>splice()</p>
+        语法：arrayObject.splice(index,howmany,item1,.....,itemX)
+        输入值：
+        功能：向数组添加项目或者从数组中删除项目
+        返回值：向/从数组中添加/删除项目，然后返回被删除的项目
+        改变原数组
+    </li>
+    <li><p>reverse()</p>
+        语法： arrayObject.reverse()
+        输入值：无
+        功能：用于颠倒数组中的元素的顺序
+        返回值：返回颠倒顺序之后的数组
+        改变原数组
+    </li>
+    <li><p>sort()</p>
+        语法：arr.sort()   或者  arr.sort(compareFunction)
+        输入值；无  或者  函数（用来指定按某种顺序进行排列的函数。如果省略，元素按照转换为的字符串的各个字符的Unicode位点进行排序）
+        功能：排序
+        返回值：排序之后的数组
+        改变原数组
+    </li>
+    <li><p>indexOf()</p>
+        stringObject.indexOf(searchvalue,fromindex)--searchvalue要检索的值，fromindex开始检索的位置，从前向后检索，返回首次出现的位置，找不到返回-1
+    </li>
+    <li><p>lastIndexOf()</p>
+        stringObject.lastIndexOf(searchvalue,fromindex)--searchvalue要检索的值，fromindex开始检索的位置，从后向前检索，返回最后出现的位置，找不到返回-1
+    </li>
+    <li><p>map()</p>
+        arr.map(function(currentValue,index,arr), thisValue)--thisValue作为this的值，如果忽略则为undefined，返回一个经过callback处理数组的每一个元素之后的结果组成的新数组，不会对空数组进行检测，不改变原数组
+    </li>
+    <li><p>reduce()</p>
+        arr.reduce(function(total, currentValue, currentIndex, arr), initialValue)--total作为callback的返回值，initialValue是total的初始值，返回一个经过callback处理之后的结果数组，不改变原数组，对于空数组是不会执行回调函数的
+    </li>
+    <li><p>reduceRight()</p>
+        arr.reduce(function(total, currentValue, currentIndex, arr), initialValue)，同reduce一样，只不过是从数组末尾向前遍历，不改变原数组，对于空数组是不会执行回调函数的
+    </li>
+    <li><p>every()</p>
+        arr.every(function(currentValue,index,arr), thisValue)，检测数组所有元素是否都符合指定条件
+        如果数组中检测到有一个元素不满足，则整个表达式返回 false ，且剩余的元素不会再进行检测，否则为true
+    </li>
+    <li><p>forEach()</p>
+        array.forEach(function(currentValue, index, arr), thisValue)，调用数组的每个元素，并将元素传递给回调函数，对于空数组是不会执行回调函数的，没有返回值
+    </li>
+    <li><p>some()</p>
+        arr.some(function(currentValue,index,arr),thisValue)，依次执行数组的每个元素，如果有一个元素满足条件，则表达式返回true , 剩余的元素不会再执行检测创建一个新的数组，不会对空数组进行检测，不会改变原始数组
+    </li>
+
+    <li><p>filter()</p>
+        arr.filter(function(currentValue,index,arr), thisValue)，创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素，不会对空数组进行检测，不会改变原始数组
+    </li>
+    <li><p>find()</p>
+        返回通过测试（函数内判断）的数组的第一个元素的值，之后的值不会再调用执行函数，如果没有符合条件的元素返回 undefined，对于空数组，函数是不会执行的,并没有改变数组的原始值
+    </li>
+    <li><p>findIndex()</p>
+        传入一个测试条件（函数）符合条件的数组第一个元素位置，当数组中的元素在测试条件时返回 true 时, findIndex() 返回符合条件的元素的索引位置，之后的值不会再调用执行函数，没有符合条件的元素返回 -1，对于空数组，函数是不会执行的,并没有改变数组的原始值
+    </li>
+    <li><p>of()</p>
+        将元素列表转为数组，避免new Array()带来的诡异行为（由传入参数的个数不同造成的问题）
+    </li>
+    <li><p>from(iterator,fn,obj)</p>
+        将具有Iterator接口的对象或类数组对象转成数组
+    </li>
+    <li><p>keys()</p>
+
+    </li>
+    <li><p>values()</p>
+
+    </li>
+    <li><p>entries()</p>
+
+    </li>
+</ul>
+<script type="text/javascript" src="/js/zepto-min.js"></script>
+</body>
+</html>
