@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>面试题</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/article.css"/>
+    <style rel="stylesheet" type="text/css">
+        .pre{ white-space: pre-wrap;}
+    </style>
+</head>
+<body>
+<p class="title">js:</p>
+<p>from:</p>
+<a href="https://github.com/SimplyY/blog/blob/494d193ed01eb9cdbce80e616de9889d9a7844e2/Article/%E7%BC%96%E7%A8%8B/web%20%E5%89%8D%E7%AB%AF/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95/%E9%98%BF%E9%87%8C%E5%AE%9E%E4%B9%A0%E7%94%9F%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95%E5%BF%83%E5%BE%97.md">阿里实习生前端面试心得.md</a>
+<ol class="ol1">
+    <li>
+        如何判断一个变量是字符串
+        <div class="pre">
+            Object.prototype.toString.call('str') // '[object String]'
+            typeof 'str' // 'string'
+        </div>
+    </li>
+    <li>
+        apply 的作用，类似的更改 this 的方法有哪些
+        <div class="pre">
+            apply 可以动态更改函数对象内部的 this，可以用于将 DOMList arguments 等伪数组变成数组，这样就可以，对它们使用数组的方法来操作。
+            call、bind
+        </div>
+    </li>
+    <li>
+        性能优化的方法
+        <div class="pre">
+            min gzip
+            关于前端性能优化, 推荐 高性能网站建设指南
+
+            min 是 webpack 做的（也就是所谓的自动），我发现很多人弄混了前端 min gzip 的意义，我这里写写。
+
+            min 不叫压缩，叫混淆或者精简，比方说把函数名 test 精简 为 a ，所有代码全部变成一行，这样代码体积就小了。一般由自动化工具完成。
+
+            压缩一般用 gzip ，是编码行为，我们熟悉的有霍夫曼编码（可以压缩体积），是后端完成的。服务器端响应 http 请求的时候，可以把 response 的内容用 gzip 压缩，然后设置 header 的 Content-Encoding:gzip ，浏览器看到这个 header 后，就会去用 gzip 的方式解压。
+        </div>
+    </li>
+    <li>
+        性能优化，除了雅虎13条军规，还有哪些
+        <div class="pre">
+            寻找最短链路（用户到美国服务器），缓存大有可为（服务器端）
+        </div>
+    </li>
+    <li>
+        let 、var 区别
+        <div class="pre">
+            let 块级作用域，var 函数作用域
+        </div>
+    </li>
+    <li>
+        let 暂时性死区的原因
+        <div class="pre">
+            var 会变量提升，let 不会。
+        </div>
+    </li>
+    <li>
+        浏览器事件传递机制，有没有停止冒泡的使用经验
+        <div class="pre">
+            冒泡、捕捉。
+            e.stopPropagation()
+        </div>
+    </li>
+    <li>
+        如何理解闭包
+        <div class="pre">
+            闭包的形成
+            js 是函数作用域的，当有函数嵌套的时候，其中内层函数可以访问外层函数里的变量，这时便形成了闭包。
+
+            // 其中 displayName、myFunc 就是 闭包。
+            function makeFunc() {
+            var name = "Mozilla";
+            function displayName() {
+            alert(name);
+            }
+            return displayName;
+            }
+
+            var myFunc = makeFunc();
+            myFunc();
+            MDN中说道
+            闭包是指函数有自由独立的变量。也就是，定义在闭包中的函数可以“记忆”它创建时候的环境（即其作用域存在的所有变量）。
+            闭包是一种特殊的对象。它由两部分构成：函数，以及创建该函数的环境（两者合起来可以视作为整个外层函数 makeFunc 的返回值 myFunc）
+            用处
+            设计模块中的私有属性和方法（闭包中的自由变量 如上面代码的 name，它无法被直接访问）
+            让这些变量的值始终保持在内存中(可以被延迟调用，比如事件 handler，ajax 异步调用的回调函数等)。
+        </div>
+    </li>
+    <li>
+        闭包与函数作用域的联系
+        <div class="pre">
+            函数作用域是产生闭包的原因
+        </div>
+    </li>
+    <li>
+        说一说你擅长和不擅长的方面
+        <div class="pre">
+            切记不要说不擅长 js，以及这道题几乎每个面试官都问我了，出现概率很大，可以提前准备
+            擅长 js，css 不擅长。
+        </div>
+    </li>
+    <li>
+        谈一谈 promise
+        <div class="pre">
+            依照 Promise/A+ 的定义，
+
+            Promise表示一个异步操作的最终结果。
+
+            Promise 有四种状态：
+
+            pending: 初始状态, 非 fulfilled 或 rejected.
+            fulfilled: 成功的操作.
+            rejected: 失败的操作.
+            settled: Promise已被fulfilled或rejected，且不是pending
+            另外， fulfilled 与 rejected 一起合称 settled。
+
+            Promise 对象用来进行延迟(deferred) 和异步(asynchronous ) 计算。
+
+            Promise 的构造函数
+            构造一个 Promise，最基本的用法如下：
+
+            var promise = new Promise(function(resolve, reject) {
+                if (...) {  // succeed
+                    resolve(result);
+                } else {   // fails
+                    reject(Error(errMessage));
+                }
+            });
+            Promise.then
+            Promise 实例拥有 then 方法（具有 then 方法的对象，通常被称为 thenable）。它的使用方法如下：
+
+            // return promise
+            promise.then(onFulfilled, onRejected)
+            接收 两个函数 作为参数，一个在 fulfilled 的时候被调用，一个在 rejected 的时候被调用，接收参数就是 future，onFulfilled 对应 resolve, onRejected 对应 reject。
+
+            promise 的执行顺序到底是怎么样的呢，首先 promise 维护了俩回调函数数组，根据状态改变（resolve or reject）来执行。
+
+            其中注意的是，then 方法中的 onFulfilled 如果返回一个 promise，则采用其状态。
+
+            异步 api 串行
+            即将此 promise 作为 then 的返回值，因此就可以做到对异步 api（支持 promise 的，即返回 promise）进行串行处理。
+
+            比方说
+
+            // promiseApix return promise
+            promiseApi1()
+            .then(dealData1)
+            .then(promiseApi2)
+            .then(dealData2)
+            此法通常可以用来延迟加载（首页只下载 mustData，下载完成后再下载其他的 data）
+
+            多说几句，promiseApi1 实际上就是一个函数，它的返回值是一个 promise 对象（很多 提供 ajax 操作的类库都是支持，比方说最新版的 jq 的 ajax 函数就可以返回一个 promise）
+
+            示例
+
+            $.ajax('https://www.zhihu.com/')
+            .then(function(data){
+                console.log(data)
+            })
+            .then(function(){
+                return $.ajax('https://www.zhihu.com/people/SimplyY')
+            })
+            .then(function(data){
+                console.log(data)
+            })
+            之所以和上面不一样，没有传递函数作为 then 的参数，是因为 ajax 方法需要 url 参数，其实你可以对 ajax 请求封装一层函数（并且函数没有参数），然后在函数里面 return 一个 promise 即可。
+
+            示例
+
+            function loadMustData() {
+                return new Promise((resolve, reject) => {
+                    $.ajax('https://www.zhihu.com/people/SimplyY')
+                    .then(function(data) {
+                        resolve(data)
+                    })
+                })
+            }
+
+            $.ajax('https://www.zhihu.com/')
+            .then(function(data){
+                console.log(data)
+            })
+            .then(loadMustData)
+            .then(function(data){
+                console.log(data)
+            })
+            异步 api 并行
+            附送并行代码
+
+            Promise.all(promiseApi1(), promiseApi2())
+            .then(datas => {
+                let [data1, data2] = datas
+                // do something deal data
+            })
+        </div>
+    </li>
+    <li>
+        使用选择器查找页面内所有 div 元素
+        <div class="pre">
+            getElementsByTagName('div')
+            querySelectorAll('div') // ie9+
+        </div>
+    </li>
+    <li>
+        如何优化 DOM 操作的性能
+        <div class="pre">
+            不要反复使用 DOM 查询操作，应该用变量缓存
+            避免大量使用会造成重绘的 DOM 操作
+            多使用 id 选择器
+        </div>
+    </li>
+    <li>
+        影响页面重绘的操作
+        <div class="pre">
+            改变 width height、offset 等值
+            其中 js 动画影响显著，我以前项目写过 js 长动画，性能很差，cpu 飙升，长动画应该用 css 动画。
+        </div>
+    </li>
+    <li>
+        前端渲染和后端渲染的优缺点
+        <div class="pre">
+            前端渲染不利于 seo，可能会增加HTTP请求
+            后端当一分钟访问量几百万对服务器有压力
+            其他资料：
+                from 司徒正美博客 http://www.cnblogs.com/rubylouvre/p/4128500.html
+                服务器为了前端渲染，对对象的字符串化所消耗的时间，远远大于服务器直接渲染模板生成HTML所花费的时间。
+                我的建议是前后端模板同时使用。
+                后端渲染完了之后，需要进行网络传输的体积大了，带来的网络损耗和网络传输时间问题 很多场景，尤其是在移动端，我们通常不会把渲染工作交给后端，一方面后端渲染需要时间，一方面庞大的渲染数据传输也有时延，所以就会出现白屏问题。
+                nodejs 的出现让模板复用方便了不少，很多时候，让后端渲染一部分（比如首屏部分），后面的工作就交给前端异步去处理。两者结合起来效果才是最佳的。
+                SEO 问题嘛，看产品需求，很多产品优化了 SEO 也没多大作用，如果实在要考虑：可以使用 pjax / quickling / hash bang 等技术,或服务器端根据 UA 输出内容
+        </div>
+    </li>
+    <li>
+        如何解决跨域问题
+        <div class="pre">
+            JSONP
+            CORS
+            服务器端对于CORS的支持，主要就是通过设置Access-Control-Allow-Origin来进行的。如果浏览器检测到相应的设置，就可以允许Ajax进行跨域的访问
+
+            Ajax
+            完整步骤
+            创建XMLHttpRequest对象。
+            设置响应HTTP请求状态变化的函数。
+            创建一个新的HTTP请求,并指定该HTTP请求的方法、URL及验证信息，发送HTTP请求。
+            在响应HTTP请求状态变化的函数里，获取异步调用返回的数据。
+            最后，使用JavaScript 实现 DOM 局部刷新。
+            // code for IE7+, Firefox, Chrome, Opera, Safari
+            var xmlhttp = new XMLHttpRequest();
+
+            xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4) {
+            if(xmlhttp.status == 200){
+            // do something
+            console.log(xmlhttp.responseText);
+            }
+            else if(xmlhttp.status == 400) {
+            alert('There was an error 400')
+            }
+            else {
+            alert('something else other than 200 was returned')
+            }
+            }
+            }
+
+            xmlhttp.open("GET", "ajax_info.txt", true);
+            xmlhttp.send();
+        </div>
+    </li>
+    <li>
+        性能优化效果最好的几个方面
+        <div class="pre">
+            减少 http 请求，gzip
+        </div>
+    </li>
+    <li>
+        介绍一下你对浏览器内核的理解？
+        <div class="pre">
+            主要分成两部分：渲染引擎(layout engineer或Rendering Engine)和JS引擎。
+            渲染引擎：负责取得网页的内容（HTML、图像等等）、加入样式等信息（CSS等），以及计算网页的显示方式，然后输出
+            JS引擎：解析和执行javascript来实现网页的动态效果。
+            最开始渲染引擎和JS引擎并没有区分的很明确，后来JS引擎越来越独立，内核就倾向于只指渲染引擎。
+        </div>
+    </li>
+    <li>
+        常见的浏览器内核有哪些？
+        <div class="pre">
+            Trident 内核：IE,360,搜狗浏览器等。[又称MSHTML]
+            Gecko 内核：FireFox等
+            Webkit 内核：Safari,android Chrome,android,ios等。 [ Chrome的：Blink（WebKit的分支）]
+        </div>
+    </li>
+    <li>
+        HTML5的离线储存
+        <div class="pre">
+            介绍
+            在用户没有与因特网连接时，可以正常访问站点或应用，在用户与因特网连接时，更新用户机器上的缓存文件。
+
+            原理
+            HTML5的离线存储是基于一个新建的.appcache文件的缓存机制(不是存储技术)，通过这个文件上的解析清单离线存储资源，这些资源就会像cookie一样被存储了下来。之后当网络在处于离线状态下时，浏览器会通过被离线存储的数据进行页面展示。
+
+            怎么用
+            首先来讲解下离线存储的使用方法，说起来也很简单。只要在你的页面头部像下面一样加入一个manifest的属性就可以了。
+
+            <!DOCTYPE HTML>
+            <html manifest = "cache.manifest">
+            ...
+            </html>
+            然后cache.manifest文件的书写方式，就像下面这样：
+
+            CACHE MANIFEST
+
+            CACHE:
+
+            js/app.js
+            css/style.css
+
+            NETWORK:
+            resourse/logo.png
+
+            FALLBACK:
+            / /offline.html
+            离线存储的manifest一般由三个部分组成:
+
+            CACHE:表示需要离线存储的资源列表
+            NETWORK:表示在它下面列出来的资源只有在在线的情况下才能访问，他们不会被离线存储
+            FALLBACK:(示例里面'/ /'不是注释)表示如果访问第一个资源失败，那么就使用第二个资源来替换他，比如上面这个文件表示的就是如果访问根目录下任何一个资源失败了，那么就去访问offline.html。
+        </div>
+    </li>
+    <li>
+        如何实现浏览器内多个标签页之间的通信?
+        <div class="pre">
+            调用localstorge、cookies等本地存储方式
+            Cookie
+            Cookie 是小甜饼的意思。顾名思义，cookie 确实非常小，它的大小限制为4KB左右。它的主要用途有保存登录信息，比如你登录某个网站市场可以看到“记住密码”，这通常就是通过在 Cookie 中存入一段辨别用户身份的数据来实现的。
+
+            一般由服务器生成，可设置失效时间。如果在浏览器端生成Cookie，默认是关闭浏览器后失效。每次 都会携带在HTTP头中，如果使用cookie保存过多数据会带来性能问题（每一次的 http 请求的大小都会加上 cookie 的大小）,所以Cookie 当然是能精简就精简
+
+            localStorage
+            localStorage 是 HTML5 标准中新加入的技术, 用于本地存储, 仅在客户端（即浏览器）中保存，不参与和服务器的通信。
+
+            曾经还使用 Cookie 来保存用户在电商网站的购物车信息，如今有了 localStorage，似乎在这个方面也可以给 Cookie 放个假了。HTML5游戏也非常适合使用。
+
+            sessionStorage
+            sessionStorage 与 localStorage 的接口类似，但保存数据的生命周期与 localStorage 不同它只是可以将一部分数据在当前会话中保存下来，刷新页面数据依旧存在。但当 页面关闭 后，sessionStorage 中的数据就会被清空。
+
+            如果遇到一些内容特别多的表单，为了优化用户体验，我们可能要把表单页面拆分成多个子页面，然后按步骤引导用户填写。这时候 sessionStorage 的作用就发挥出来了。
+
+            安全
+            需要注意的是，不是什么数据都适合放在 Cookie、localStorage 和 sessionStorage 中的。使用它们的时候，需要时刻注意是否有代码存在 XSS 注入的风险。也就是说如果你的网站中有 XSS（代码注入） 的风险，只要打开控制台，你就随意修改它们的值，能对你的 localStorage 肆意妄为。所以千万不要用它们存储你系统中的敏感数据。
+        </div>
+    </li>
+    <li>
+        写一个通用的事件侦听器函数。
+        <div class="pre">
+            markyun.Event = {
+                // 类似于 $.ready
+                readyEvent : function(fn) {
+                    var oldonload = window.onload;
+                    if (typeof window.onload !== 'function') {
+                        window.onload = fn;
+                    } else {
+                        window.onload = function() {
+                            oldonload();
+                            fn();
+                        };
+                    }
+                },
+                // 兼容：视能力分别使用dom0||dom2||IE方式 来绑定事件
+                // 参数： 操作的元素,事件名称 ,事件处理程序
+                addEvent : function(element, type, handler) {
+                    if (element.addEventListener) {
+                        //事件类型、需要执行的函数、是否捕捉
+                        element.addEventListener(type, handler, false);
+                    } else if (element.attachEvent) {
+                        element.attachEvent('on' + type, function() {
+                        handler.call(element);
+                    });
+                    } else {
+                        element['on' + type] = handler;
+                    }
+                },
+                // 移除事件
+                removeEvent : function(element, type, handler) {
+                    if (element.removeEventListener) {
+                        element.removeEventListener(type, handler, false);
+                    } else if (element.datachEvent) {
+                        element.detachEvent('on' + type, handler);
+                    } else {
+                        element['on' + type] = null;
+                    }
+                },
+                // 阻止事件 (主要是事件冒泡，因为IE不支持事件捕获)
+                stopPropagation : function(ev) {
+                    if (ev.stopPropagation) {
+                        ev.stopPropagation();
+                    } else {
+                        ev.cancelBubble = true;
+                    }
+                },
+                // 取消事件的默认行为
+                preventDefault : function(event) {
+                    if (event.preventDefault) {
+                        event.preventDefault();
+                    } else {
+                        event.returnValue = false;
+                    }
+                },
+                // 获取事件目标
+                getTarget : function(event) {
+                    return event.target || event.srcElement;
+                }
+            };
+        </div>
+    </li>
+    <li>
+        js延迟加载的方式有哪些？
+        <div class="pre">
+            defer和async(有兼容性问题)
+            动态创建DOM方式（用得最多，可以控制创建加载的时机,google analyze就用的它,这个方式几乎成了标准的异步载入js文件的方式）
+        </div>
+    </li>
+    <li>
+        你有用过哪些前端性能优化的方法？
+        <div class="pre">
+            请求数量:	合并脚本和样式表, iconfont，拆分初始化负载，划分主域
+            请求带宽:	开启 GZip，精简 JavaScript，移除重复脚本，图像优化
+            缓存利用:	使用 CDN，使用外部 JavaScript 和 CSS，减少 DNS 查找
+            页面结构:	将样式表(影响样式的内容)放在顶部，将脚本放在底部，尽早刷新文档的输出
+            “拆分初始化负载”的目标是将页面一开始加载时不需要执行的资源从所有资源中分离出来，等到需要的时候再加载。
+
+            划分主域 + 减少 DNS 查找：建议在一个网站里面使用至少2个域，但不多于4个域来提供资源
+        </div>
+    </li>
+    <li>
+        http状态码有那些？分别代表是什么意思？
+        <div class="pre">
+            1**(信息类)：表示接收到请求并且继续处理
+                100 Continue 继续，一般在发送post请求时，已发送了http header之后服务端将返回此信息，表示确认，之后发送具体参数信息
+            2**(响应成功)：表示动作被成功接收、理解和接受
+                200 OK 正常返回信息
+                201 Created 请求成功并且服务器创建了新的资源
+                202 Accepted 服务器已接受请求，但尚未处理
+            3**(重定向类)：为了完成指定的动作，必须接受进一步处理
+                301 Moved Permanently 请求的网页已永久移动到新位置。
+                302 Found 临时性重定向。
+                303 See Other 临时性重定向，且总是使用 GET 请求新的 URI。
+                304 Not Modified 自从上次请求后，请求的网页未修改过。
+            4**(客户端错误类)：请求包含错误语法或不能正确执行
+                401 Unauthorized 请求未授权验证。
+                403 Forbidden 禁止访问。
+                404 Not Found 找不到如何与 URI 相匹配的资源。
+            5**(服务端错误类)：服务器不能正确执行一个正确的请求
+                500 Internal Server Error 服务器遇到错误，最常见的服务器端错误。
+                503 Service Unavailable 服务器端暂时无法处理请求（可能是过载或维护）。
+        </div>
+    </li>
+    <li>
+        一个页面从输入 URL 到页面加载显示完成，这个过程中都发生了什么？（流程说的越详细越好）
+        <div class="pre">
+            注：这题胜在区分度高，知识点覆盖广，再不懂的人，也能答出几句， 而高手可以根据自己擅长的领域自由发挥，从URL规范、HTTP协议、DNS、CDN、数据库查询、 到浏览器流式解析、CSS规则构建、layout、paint、onload/domready、JS执行、JS API绑定等等；
+
+            简洁版
+
+            浏览器根据请求的URL交给DNS域名解析，找到真实IP，向服务器发起请求；
+            服务器交给后台处理完成后返回数据，浏览器接收文件（HTML、JS、CSS、图像等）；
+            浏览器对加载到的资源（HTML、JS、CSS等）进行语法解析，建立相应的内部数据结构（如HTML的DOM）；
+            载入解析到的资源文件，渲染页面，完成。
+            图来自耗子的酷壳 浏览器的渲染原理简介
+
+            详细版
+
+            浏览器会开启一个新的线程来处理这个请求，对 URL 分析判断如果是 http 协议就按照 Web 方式来处理;
+            通过 DNS 解析获取网址的IP地址，设置 UA 等信息发出第二个GET请求;
+            进行 HTTP 协议会话，客户端发送报头(请求报头);
+            进入到 web 服务器上的 Web Server，如 Apache、Tomcat、Node.JS 等服务器;
+            进入部署好的后端应用，如 PHP、Java、JavaScript、Python 等，找到对应的请求处理;
+            处理结束回馈报头，和资源，如果是浏览器访问过的资源，浏览器缓存上有对应的，会与服务器最后修改时间对比，一致则返回304;
+            如果 html 没缓存，则浏览器开始下载 html 文档(响应报头，状态码200)，同时使用缓存;
+            html 一边下载一边解析 html，根据标签建立文档树 DOM
+            其中根据标记下载所需css、js、图片文件，其中 css 是异步下载，同步执行(By default CSS is treated as a render blocking resource, html 也是)并会阻塞式的建立 CSSOM, 然后这俩一起会 render 成完整的 render 树（最后我们看到的样子），然后再因为假如把 css 放到底部,可能页面会出现白屏(阻塞 render)，或者布局混乱样式很丑直到CSS加载完成闪跳(rerender)的感觉。所以写到顶部确保用户至少能早一点看到界面。
+            js 在现代浏览器里面是异步下载，同步执行的，最好放到底部。因为对于在 js 后面的内容（html），html 的逐步呈现会被阻塞。
+            当 js 运行完成，页面加载完成。
+            补充知识
+            当浏览器遇到（内嵌）&lt;script&gt;标签时，当前浏览器无从获知javaScript是否会修改页面内容。因此，这时浏览器会停止处理页面，先执行javaScript代码，然后再继续解析和渲染页面。同样的情况也发生在使用 src 属性加在javaScript的过程中（即外链 javaScript），浏览器必须先花时间下载外链文件中的代码，然后解析并执行它。在这个过程中，页面渲染和用户交互完全被阻塞了。
+
+也就是说：每当浏览器解析到&lt;script&gt;标签（无论内嵌还是外链）时，浏览器会（一根筋地）优先下载、解析并执行该标签中的javaScript代码，而阻塞了其后所有页面内容的下载和渲染。
+
+从 IE 8、Firefox 3.5、Safari 4 和 Chrome 2 开始都允许并行下载 JavaScript 文件 &lt;script&gt;标签在下载外部资源时不会阻塞其他&lt;script&gt;标签。遗憾的是，JavaScript 下载过程仍然会阻塞其他资源的下载，比如样式文件和图片(之前的版本会阻塞所有资源的下载),还是会锁死浏览器的一段时间（无法交互）
+        </div>
+    </li>
+    <li>
+        null和undefined的区别？
+        <div class="pre">
+            null是一个表示空值的对象，即不存在的对象。
+
+            The DOM methods getElementById(), nextSibling(), childNodes[n], parentNode() and so on return null (defined but having no value) when the call does not return a node object.
+
+            null典型用法是：
+
+            作为函数的返回值，表示该函数本应该返回对象，但是找不到，即为不存在的对象的意思。
+            作为对象原型链的终点。
+            调用函数时，作为缺省的参数。比如
+            Math.max.apply(null, array)
+            undefined是一个表示"无"的原始值。 当声明的变量还未被初始化时，变量的默认值为undefined。
+
+            undefined 典型用法是：
+
+            变量或对象属性被声明了，但没有赋值时，就等于 undefined。
+            调用函数时，未传入参数，函数内部该参数等于 undefined。
+            函数没有返回值时，默认返回 undefined。
+        </div>
+    </li>
+    <li>
+        new操作符具体干了什么呢?
+        <div class="pre">
+            // 创建一个空对象，同时还继承了该函数的原型。
+            var obj = {};
+            obj.__proto__ = Base.prototype;
+
+            // 以空对象为 this，call 调用函数，，这样以来属性和方法被加入到 this 中。
+            // 也就是加给了此空对象 。
+            Base.call (obj);
+        </div>
+    </li>
+    <li>
+        javascript 创建对象
+        <div class="pre">
+            我喜欢，组合构造函数（赋值实例属性）和原型模式（赋值原型属性、方法）来创建对象。
+            其中实例属性是每个对象私有的，各自都持有一份的；而原型属性、方法是公共拥有的，无论有多少此类型对象，也只有一份。
+        </div>
+    </li>
+    <li>
+        js 继承
+        <div class="pre">
+            我喜欢，寄生组合式继承
+            // subclass extends superclass
+            SubClass.prototype = Object.create(SuperClass.prototype);
+            SubClass.prototype.constructor = SubClass;
+        </div>
+    </li>
+    <li>
+        解释下浮动和它的工作原理？用处？浮动的问题？清除浮动的技巧
+        <div class="pre">
+            工作原理
+            浮动元素脱离文档流。浮动的框可以向左或向右移动，直到他的外边缘碰到包含框或另一个浮动框的边框为止。
+
+            用处
+            文字绕排图片的效果
+            让原来上下堆叠的块级元素，实现布局中的分栏
+            问题
+            父元素的高度无法被撑开，影响与父元素同级的元素
+            与浮动元素同级的非浮动元素（内联元素）会跟随其后（可使用 clear）
+            清除浮动的三种方法
+            为父元素添加 overflow:hidden（第一个方法很简单，缺点是不太直观.）
+            同时浮动父元素（比较麻烦，还需 clear 父元素同级元素）
+            添加非浮动的清除元素，使用伪类很方便，给 父元素的最后添加一个非浮动的子元素，然后 clear 该子元素。
+            补充，前两种方法的原理是创建了 BFC。
+
+            第三种方法的原理是，由于父元素一定会包围非浮动的子元素, 而且清除会让这个子元素位于(清除一侧)浮动元素的 下方,因此父元素一定会包含这个非浮动的子元素——以及前面的浮动元素
+
+            .clearfix:after {
+                content:".";
+                display:block;
+                height:0;
+                visibility:hidden;
+                clear:both;
+            }
+        </div>
+    </li>
+    <li>
+        用 setTimeout 如何调用多次
+        <div class="pre">
+            在回调函数里再次调用 setTimeout
+
+            setTimeout(function() {
+                if (condition) {
+                    return
+                }
+                setTimeout(arguments.callee, 0)
+            }, 0)
+            不过这里值得注意的是 arguments.callee 是不推荐的写法，在 es5 里的严格模式禁止使用（但是是这道题方便解法），而且切记要设置终止条件，不然就会无限递归
+
+            更好的解法
+
+            function delayFun(){
+                if (condition) {
+                    return
+                }
+                console.log(1)
+                setTimeout(delayFun, 0)
+            }
+            setTimeout(delayFun, 0)
+        </div>
+    </li>
+    <li>
+        常见web安全及防护原理
+        <div class="pre">
+            sql注入
+            就是通过把SQL命令插入到Web表单中递交，或插入到输入包含查询字符串（query string）的 url，最终达到欺骗服务器执行恶意的SQL命令。
+
+            避免方式
+            前端需
+
+            永远不要信任用户的输入，要对用户的输入进行校验，可以通过正则表达式，或限制长度，对单引号和双"-"进行转换等。
+            不要把机密信息明文存放，请加密或者hash掉密码和敏感的信息。
+            XSS
+            Xss(cross-site scripting)攻击指的是攻击者往Web页面里插入恶意 html标签或者javascript代码。比如：攻击者插入 js 代码，然后运行，或者甚至替换你的 script 标签（联通手机流量这么干过劫持，然后你的代码就运行不了啦。。被替换成他的了，然后攻击者想干啥就干啥，只要你能干的，他都可以干）。
+
+            防范
+            首先代码里对用户输入的地方和变量都需要仔细检查长度和对”<”,”>”,”;”,”’”等字符做过滤
+
+            其次任何内容写到页面之前都必须加以encode，避免不小心把html tag 弄出来。这一个层面做好，至少可以堵住超过一半的XSS 攻击。
+
+            encode html tag
+
+            & -> &amp;
+            < -> &lt;
+            > -> &gt;
+            function safeTagsReplace(str) {
+            return str.replace(/[&<>]/g, replaceTag);
+            }
+
+            function replaceTag(tag) {
+            var tagsToReplace = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;'
+            };
+
+            return tagsToReplace[tag] || tag;
+            }
+            CSRF
+            CSRF（Cross-site request forgery），中文名称：跨站请求伪造
+
+            你这可以这么理解CSRF攻击：攻击者盗用了你的身份，以你的名义发送恶意请求。CSRF能够做的事情包括：以你名义发送邮件，发消息，盗取你的账号，甚至于购买商品，虚拟货币转账......造成的问题包括：个人隐私泄露以及财产安全。
+
+            要完成一次CSRF攻击，受害者必须依次完成两个步骤：
+
+            登录受信任网站A，并在本地生成Cookie。 　　
+            在不登出A的情况下，访问危险网站B（B 网站会直接发送恶意请求，比如转钱，而这时已有Cookie，存在漏洞的 A 网站会以为这个请求是你发出的）。
+            CSRF的防御
+            服务端的CSRF方式方法很多样，但总的思想都是一致的，就是在客户端页面增加伪随机数。
+
+            原理就是，要求在访问敏感数据请求时，要求用户浏览器提供不保存在cookie中，并且攻击者无法伪造的数据作为校验，那么攻击者就无法再执行CSRF攻击
+
+            使用验证码
+            添加 token 并验证
+        </div>
+    </li>
+    <li>
+        GET和POST的区别
+        <div class="pre">
+            GET：一般用于信息获取，使用URL传递少量参数（query string），对所发送信息的数量也有限制 POST：一般用于修改服务器上的资源，对所发送的信息没有限制。
+
+            使用 post 的情况
+
+            向服务器发送大量数据（POST 没有数据量限制）
+            更新服务器数据操作
+        </div>
+    </li>
+    <li>
+        说说你对MVC和MVVM的理解
+        <div class="pre">
+            MVC
+            View 响应用户交互，将特定事件传给 Controller
+            Controller 完成业务逻辑后，要求 Model 改变状态（改变 model 状态的方法，应该是 model 模块的内容，不要写进 controller）
+            Model 将新的数据发送到 View(当Model变更了以后，会通过观察者模式（Observer Pattern）通知View)，用户得到反馈
+            MVVM
+            组成部分Model、View、ViewModel
+
+            View：UI界面
+            ViewModel：它是View的抽象，负责View与Model之间信息转换，将View的Command传送到Model；
+            Model：数据访问层
+        </div>
+    </li>
+    <li>
+        请解释什么是事件代理
+        <div class="pre">
+            事件代理（Event Delegation），又称之为事件委托。是 JavaScript 中常用绑定事件的常用技巧，用于优化性能。
+
+            使用情景，当需要给每一个子元素绑定事件的时候，会消耗大量性能。
+
+            “事件代理”即是把原本需要绑定的事件委托给父元素，让父元素担当事件监听的职务。事件代理的原理是DOM元素的事件冒泡。使用事件代理的好处是可以提高性能。
+
+            实现
+            function delegate(parentEl, childsSelector, eventName, handler) {
+            var childCollection = parentEl.querySelectorAll(childsSelector);
+            var childs = Array.prototype.slice.call(childCollection);
+
+            parentEl.addEventListener(eventName, function(e) {
+            var eventTarget = e.target;
+
+            if (childs.indexOf(eventTarget) >= 0) {
+            handler(e);
+            }
+            }, false);
+            }
+
+            delegate(document.querySelector('#test'), 'li.active', 'click', function(e) {
+            console.log(e.target);
+            });
+        </div>
+    </li>
+    <li>
+        attribute和property的区别是什么？
+        <div class="pre">
+            attribute是dom元素在文档中作为html标签拥有的属性；
+
+            property就是dom元素在js中作为对象拥有的属性。
+        </div>
+    </li>
+    <li>
+        Javascript垃圾回收方法
+        <div class="pre">
+            标记清除
+            这是JavaScript最常见的垃圾回收方式，当变量进入执行环境的时候，比如函数中声明一个变量，垃圾回收器将其标记为“进入环境”，当变量离开环境的时候（函数执行结束）将其标记为“离开环境”
+
+            垃圾回收器会在运行的时候给存储在内存中的所有变量加上标记，然后去掉环境中的变量以及被环境中变量所引用的变量（闭包），在这些完成之后仍存在标记的就是要删除的变量了
+        </div>
+    </li>
+    <li>
+        写代码
+        <div class="pre">
+            js对象的深度克隆
+                function clone(obj) {
+                    var newObj;
+                    if (obj instanceof Array) {
+                        newObj = [];  //创建一个空的数组
+                        var i = obj.length;
+                        while (i--) {
+                            newObj[i] = clone(obj[i]);
+                        }
+                        return newObj;
+                    }
+                    else if (obj instanceof object) {
+                        newObj = {};  //创建一个空对象
+                        for (var k in obj) {  //为这个对象添加新的属性
+                            newObj[k] = clone(obj[k]);
+                        }
+                        return newObj;
+                    }
+                    else {
+                        return obj;
+                    }
+                }
+            写一个spacify函数，使得 spacify('hello world') // => 'h e l l o w o r l d'
+                function spacify(str) {
+                    return str.split('').join(' ');
+                }
+            定义log，然后它可以代理console.log的方法
+                希望你的侯选人可以直接使用apply,传入console的上下文也非常重要。
+
+                function log(){
+                    console.log.apply(console, arguments);
+                };
+            每一个log消息添加一个"(app)"的前辍
+                function log(){
+                    var args = Array.prototype.slice.call(arguments);
+                    args.unshift('(app)');
+                    console.log.apply(console, args);
+                };
+            上下文
+                var User = {
+                    count: 1,
+                    getCount: function() {
+                        return this.count;
+                    }
+                };
+
+                console.log(User.getCount());
+                var func = User.getCount;
+                console.log(func());
+                正确的答案是1和undefined。
+
+            他们怎么样保证User总是能访问到func的上下文
+                var func = User.getCount.bind(User);
+                console.log(func());
+
+            如何 polyfill 一个简单的 bind
+                Function.prototype.bind = Function.prototype.bind || function(context){
+                    var self = this;
+
+                    return function(){
+                        return self.apply(context, arguments);
+                    };
+                }
+
+            var a=["a","b","c","d"] 每过 1 秒 log 一下数组中的值
+                var a=["a","b","c","d"];
+                for(var i = 0; i < 4; i++) {
+                    (function(j) {
+                        setTimeout(function() {
+                            console.log(a[j]);
+                        }, j * 1000);
+                    })(i);
+                }
+                我的写法，感觉更优雅有木有
+
+                var a = ["a","b","c","d"];
+                for(var i = 0; i < a.length; i++) {
+                    var log = function(j) {
+                        return function() {
+                            console.log(a[j])
+                        }
+                    }
+                    setTimeout(log(i), i * 1000)
+                }
+                注意，这里考的是闭包和经验。
+
+                一定要使用 iife(Immediately-invoked function expression)立即执行函数表达式。
+
+                将 i 传进去，本质就是将每次遍历时的 i 的值复制到 j 里（每次遍历的 j 都是新的一个 j，函数参数传递值的就像声明一样，所以每一个 j 都是独一无二的）。
+
+                假如不这样，在 setTimeout 的 callback 里的 i 会一直都是 4（闭包的特性，对于闭包callback，i 只有一个，在执行callback 的时候，i 为 4，虽然 j 也形成了闭包，但是 j 有多个，为0,1,2,3）
+        </div>
+    </li>
+    <li>
+        浏览器缓存介绍精简版
+        <div class="pre">
+            前言
+            这是精简版。会分两块介绍：
+
+                浏览器缓存机制
+                前端缓存优化策略
+
+
+            浏览器缓存机制
+                两个条件
+                    当静态资源(js、css、img 等)被缓存在浏览器（默认情况下第一次访问，资源就会被缓存），浏览器再次需要请求静态资源的时候，会存在俩个if 条件判断：
+
+                        是否向后端发送请求
+                        是否使用缓存
+                    正常情况下我们的理解是，先决定 是否 使用缓存，再决定是否向后端发送请求，不过浏览器的判断顺序不是这样。一图胜千言：
+
+
+
+                http header 介绍
+
+
+                    如图：
+
+                        Expires 指资源过期时间的时间点
+                        Cache-Control 指缓存资源过期寿命，单位毫秒
+                    当浏览器根据以上两个 header 发现资源已经失效，就会向后端发送请求（询问后端资源是否更改），其中 Cache-Control 强于 Expires，两者同时存在的时候过期时间只取决于 Cache-Control 的值。
+
+                        ETag
+                        Last-Modified
+                    这俩都是用于标志 文件是否更改。
+
+            前端缓存优化策略
+                性能最好的自然是强缓存，那么当资源更新的时候怎么办，我们怎么去更新资源？？？
+
+            版本控制
+                理论上的答案就是 对静态资源进行版本控制，加上一个 hash 用于标志文件是否更改，通过发布新的 html(html 里的引用的是否更新决定了是否更新资源)
+
+                引用方式可以通过 qurey string,如下图
+
+                当然实现这个的细节之处都是魔鬼，答案是使用非覆盖式发布。
+
+                （这个问题已经有成熟的解决方案，具体内容可阅读知乎这篇文章详细了解它的前身今世：http://www.zhihu.com/question/20790576 ）
+
+                也可以通过修改文件名，加比如 xx.hash.js,如下图
+
+
+
+            总结
+            大公司的静态资源优化方案，基本上要实现这么几个东西：
+
+            配置超长时间的本地缓存 —— 节省带宽，提高性能
+            版本控制 —— 精确的缓存控制
+            静态资源 CDN部署 —— 优化网络请求
+            更新资源发布路径实现 非覆盖式发布 —— 平滑升级
+            工具
+            具体优化工具有 gulp、webpack、fis3 等，需要前后端一起配合，使得 html 对静态资源的引用能有版本控制(hash string)
+        </div>
+    </li>
+</ol>
+</body>
+</html>

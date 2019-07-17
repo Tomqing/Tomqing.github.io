@@ -6,6 +6,9 @@
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="stylesheet" href="/css/reset.css"/>
     <link rel="stylesheet" href="/css/article.css"/>
+    <style rel="stylesheet" type="text/css">
+        .pre{ white-space: pre-wrap;}
+    </style>
 </head>
 <body>
     <p class="title">js:</p>
@@ -26,6 +29,68 @@
         <li>数组排重，多种方法</li>
         <li>实现sum(1,2,3,4..n)转化为 sum(1)(2)(3)(4)...(n)</li>
         <li>node 使用场景，express如何实现304</li>
+        <li>
+            用javascript让(a==1&&a==2&&a==3)为true
+            <div class="pre">
+                1、如果a是一个对象，那在执行比较的时候先执行valueOf方法，如果没有valueOf方法，就会去执行toString方法。
+                    let a = {
+                        i : 1,
+                        toString: function(){
+                            return a.i++
+                        }
+                    }
+                    if(a==1&&a==2&&a==3){
+                        console.log('hello')
+                    }
+                2、如果a是一个数组，在数组转换成字符串的时候，会去实行数组的join方法。
+                    let a = [1,2,3];
+                    a.join = a.shift;
+                    if(a==1&&a==2&&a==3){
+                        console.log('hello')
+                    }
+                3、
+                    var i = 0;
+                    with({
+                        get a() {
+                            return ++i;
+                        }
+                    }) {
+                        if (a == 1 && a == 2 && a == 3)
+                        console.log("hello");
+                    }
+                4、
+                    var i = 0;
+                    Object.defineProperty(window, 'a', {
+                        get: function() {
+                            return ++i;
+                        }
+                    });
+                    console.log(a == 1 && a == 2 && a == 3);
+                5、
+                    window.__defineGetter__( 'a', function(){
+                        if( typeof i !== 'number' ){
+                            i = 0;
+                        }
+                        return ++i;
+                    });
+                    console.log(a == 1 && a == 2 && a == 3);
+                6、
+                    var a = new Proxy({ i: 0 }, {
+                        get: (target, name) => name === Symbol.toPrimitive ? () => ++target.i : target[name],
+                    });
+                    console.log(a == 1 && a == 2 && a == 3);
+                7、
+                    let a = {[Symbol.toPrimitive]: ((i) => () => ++i) (0)};
+                    console.log(a == 1 && a == 2 && a == 3);
+                8、
+                    var  a = 1;
+                    var ﾠ1 = a;
+                    var ﾠ2 = a;
+                    var ﾠ3 = a;
+                    console.log( a ==ﾠ1 && a ==ﾠ2 && a ==ﾠ3 );
+                    猜猜这是为啥？？
+            </div>
+        </li>
     </ol>
 </body>
 </html>
