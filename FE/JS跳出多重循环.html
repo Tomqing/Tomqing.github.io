@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content=""/>
+    <meta name="description" content=""/>
+    <meta name="format-detection" content="email=no,address=no,telephone=no"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui"/>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/demo.css"/>
+</head>
+<body>
+<style type="text/css">
+    li{ white-space: pre-wrap;}
+</style>
+<ul class="demo-list">
+    <li>
+        var flag=0,num=0;
+        for(var i =0;i<5;i++) {
+            for(var j =0; j<5;j++) {
+                if(j == 3) {
+                    flag=1;
+                    break;
+                } else{
+                    num++
+                }
+            }
+            if(flag==1) break;
+        }
+        console.log(num);
+    </li>
+    <li>
+        var num=0;
+        skip:
+        for(var i =0;i<5;i++) {
+            for(var j =0; j<5;j++) {
+                if(j == 3) {
+                    break skip;
+                } else{
+                    num++
+                }
+            }
+        }
+        console.log(num);
+    </li>
+    <li>
+        var num=0;
+        for(var i =0;i<5;i++) {
+            for(var j =0; j<5;j++) {
+                if(j == 3) {
+                    break;
+                } else{
+                    num++
+                }
+            }
+            if(j == 3) break;
+        }
+        console.log(num);
+    </li>
+</ul>
+<script type="text/javascript" src="/js/zepto-min.js"></script>
+</body>
+</html>
