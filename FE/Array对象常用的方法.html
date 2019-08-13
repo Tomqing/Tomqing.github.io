@@ -23,6 +23,10 @@
         功能：连接两个或多个数组
         返回值：返回被连接数组的一个副本
         不改变原数组
+        var arr1 = [2,3,4];
+        var arr2 = [7,8,9];
+        var arr3 = arr2.concat(arr1);
+        // arr3 -> [7, 8, 9, 2, 3, 4]
     </li>
     <li><p>join()</p>
         语法：arrayObject.join(separator)
@@ -30,6 +34,8 @@
         功能：把数组中的所有元素放入一个字符串中
         返回值：返回一个字符串。该字符串是通过把 arrayObject 的每个元素转换为字符串，然后把这些字符串连接起来，在两个元素之间插入 separator 字符串而生成的
         不改变原数组
+        [7, 8, 9, 2, 3, 4].join('-')
+        // "7-8-9-2-3-4"
     </li>
     <li><p>slice()</p>
         语法：arrayObject.slice(start,end)---包括start但不包括end，没有找到元素，则返回空的数组
@@ -105,11 +111,15 @@
         arr.map(function(currentValue,index,arr), thisValue)--thisValue作为this的值，如果忽略则为undefined，
         返回一个经过callback处理数组的每一个元素之后的结果组成的新数组，不会对空数组进行检测，
         不改变原数组
+        [7, 8, 9, 2, 3, 4].map(function(item){return ++item});
+        // [8, 9, 10, 3, 4, 5]
     </li>
     <li><p>reduce()</p>
         arr.reduce(function(total, currentValue, currentIndex, arr), initialValue)--total作为callback的返回值，initialValue是total的初始值，
         返回一个经过callback处理之后的结果数组，
         不改变原数组，对于空数组是不会执行回调函数的
+        [7, 8, 9, 2, 3, 4].reduce(function(i,j){ return i+j})  // 33
+        [7, 8, 9, 2, 3, 4].reduce(function(i,j){ return i+j},5) // 38
     </li>
     <li><p>reduceRight()</p>
         arr.reduce(function(total, currentValue, currentIndex, arr), initialValue)，同reduce一样，只不过是从数组末尾向前遍历，不改变原数组，对于空数组是不会执行回调函数的
@@ -129,30 +139,80 @@
     <li><p>filter()</p>
         arr.filter(function(currentValue,index,arr), thisValue)，过滤数组，返回一个满足要求的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素，不会对空数组进行检测，
         不会改变原始数组
+        var sortData = [
+            {sort:'0', result:'一'},
+            {sort:'1', result:'二'},
+            {sort:'2', result:'三'},
+            {sort:'3', result:'四'},
+            {sort:'4', result:'五'},
+            {sort:'5', result:'六'},
+            {sort:'6', result:'七'}
+        ];
+        var arr = sortData.filter(function(item){ return item.result == '四'});
+        // [{result: "四",sort: "3"}]
     </li>
     <li><p>find()</p>
         返回通过测试（函数内判断）的数组的第一个元素的值，之后的值不会再调用执行函数，如果没有符合条件的元素返回 undefined，对于空数组，函数是不会执行的,并没有改变数组的原始值
+        [7, 8, 9, 2, 3, 4].find(function(item){ return item > 2});
+        // 7
     </li>
     <li><p>findIndex()</p>
         传入一个测试条件（函数）符合条件的数组第一个元素位置，当数组中的元素在测试条件时返回 true 时, findIndex() 返回符合条件的元素的索引位置，之后的值不会再调用执行函数，没有符合条件的元素返回 -1，对于空数组，函数是不会执行的,并没有改变数组的原始值
+        [7, 8, 9, 2, 3, 4].findIndex(function(item){ return item == 9});
+        //2
     </li>
     <li><p>of()</p>
         将元素列表转为数组，避免new Array()带来的诡异行为（由传入参数的个数不同造成的问题）
         将一组值转换成数组，类似于声明数组    ---es6
+        let arr = Array.of('1,1,1,1,1,2,3,6,9,5,88,1');
+        // ["1,1,1,1,1,2,3,6,9,5,88,1"]
+        var arr1 = Array.of(3,4,5,6,7);
+        // [3, 4, 5, 6, 7]
     </li>
     <li><p>from(iterator,fn,obj)</p>
         将具有Iterator接口的对象或类数组对象转成数组
         将伪数组变成数组，就是只要有length的就可以转成数组 ---es6
+        iterator 你想要转换的类似数组对象和可遍历对象
+        fn 类似于数组的map方法，用来对每个元素进行处理，将处理后的值放入返回的数组
+        obj: 绑定map中用到的this
+
+        let arr = Array.from('1,1,1,1,1,2,3,6,9,5,88,1');
+        //["1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "2", ",", "3", ",", "6", ",", "9", ",", "5", ",", "8", "8", ",", "1"]
     </li>
     <li><p>keys()遍历数组的键名</p>
-
+        var arr = [3, 4, 5, 6, 7].keys();
+        for(let i of arr){
+            console.log(i);
+        }
+        // 0
+        // 1
+        // 2
+        // 3
+        // 4
     </li>
     <li><p>values()遍历数组键值</p>
-
+        var arr = [3, 4, 5, 6, 7].values();
+        for(let i of arr){
+            console.log(i);
+        }
+        // 3
+        // 4
+        // 5
+        // 6
+        // 7
     </li>
     <li><p>entries()遍历数组的键名和键值</p>
         entries() 方法返回迭代数组。
         迭代数组中每个值 前一个是索引值作为 key，数组后一个值作为 value。
+        var arr = [3, 4, 5, 6, 7].entries();
+        for(let [i,j] of arr){
+            console.log(`${i}`,`${j}`);
+        }
+        // 0 3
+        // 1 4
+        // 2 5
+        // 3 6
+        // 4 7
     </li>
 </ul>
 <script type="text/javascript" src="/js/zepto-min.js"></script>
