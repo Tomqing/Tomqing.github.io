@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3de57d24-ccd0-43cd-8e6f-7ae6a89f5ca3" name="默认的" comment="默认的">
-      <change beforePath="$PROJECT_DIR$/FE/Array对象常用的方法.html" beforeDir="false" afterPath="$PROJECT_DIR$/FE/Array对象常用的方法.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FE/Object.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FE/深入理解javascript原型和闭包.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FE/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/FE/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image/原型链.png" beforeDir="false" afterPath="$PROJECT_DIR$/image/原型链.png" afterDir="false" />
     </list>
     <ignored path="myGithub.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -20,38 +23,42 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/FE/Array对象常用的方法.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="328">
-              <caret line="208" column="29" selection-start-line="208" selection-start-column="29" selection-end-line="208" selection-end-column="29" />
+            <state relative-caret-position="1056">
+              <caret line="33" column="28" selection-start-line="33" selection-start-column="28" selection-end-line="33" selection-end-column="28" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/FE/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="384">
-              <caret line="12" column="7" selection-start-line="12" selection-start-column="7" selection-end-line="12" selection-end-column="7" />
+            <state relative-caret-position="136">
+              <caret line="16" column="38" selection-start-line="16" selection-start-column="38" selection-end-line="16" selection-end-column="38" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/article/interview/1.html">
+        <entry file="file://$PROJECT_DIR$/FE/原型链.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="64">
-              <caret line="2" column="6" selection-start-line="2" selection-start-column="6" selection-end-line="2" selection-end-column="6" />
+            <state relative-caret-position="288">
+              <caret line="8" column="138" selection-start-line="8" selection-start-column="138" selection-end-line="8" selection-end-column="138" />
+              <folding>
+                <element signature="n#style#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#img#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/article/interview/2.html">
+        <entry file="file://$PROJECT_DIR$/FE/Object.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="64">
-              <caret line="2" column="6" selection-start-line="2" selection-start-column="6" selection-end-line="2" selection-end-column="6" />
+            <state relative-caret-position="344">
+              <caret line="161" column="42" lean-forward="true" selection-start-line="161" selection-start-column="42" selection-end-line="161" selection-end-column="42" />
             </state>
           </provider>
         </entry>
@@ -76,6 +83,8 @@
       <find>indexOf</find>
       <find>form</find>
       <find>includes</find>
+      <find>defineProperty</find>
+      <find>create</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -107,10 +116,13 @@
         <option value="$PROJECT_DIR$/article/interview/1.html" />
         <option value="$PROJECT_DIR$/FE/多个连续的箭头函数及柯里化.html" />
         <option value="$PROJECT_DIR$/FE/promise 数组的异步串行.html" />
-        <option value="$PROJECT_DIR$/FE/index.html" />
         <option value="$PROJECT_DIR$/FE/promise数组的异步串行.html" />
         <option value="$PROJECT_DIR$/article/interview/2.html" />
         <option value="$PROJECT_DIR$/FE/Array对象常用的方法.html" />
+        <option value="$PROJECT_DIR$/FE/原型链.html" />
+        <option value="$PROJECT_DIR$/FE/深入理解javascript原型和闭包.html" />
+        <option value="$PROJECT_DIR$/FE/Object.html" />
+        <option value="$PROJECT_DIR$/FE/index.html" />
       </list>
     </option>
   </component>
@@ -245,7 +257,10 @@
       <workItem from="1563339936984" duration="834000" />
       <workItem from="1563352250683" duration="6051000" />
       <workItem from="1565682551774" duration="1317000" />
-      <workItem from="1565684132087" duration="2231000" />
+      <workItem from="1565684132087" duration="2871000" />
+      <workItem from="1566554494353" duration="1868000" />
+      <workItem from="1566783924263" duration="16808000" />
+      <workItem from="1566955650987" duration="4649000" />
     </task>
     <task id="LOCAL-00001" summary="demo">
       <created>1516687331094</created>
@@ -373,11 +388,32 @@
       <option name="project" value="LOCAL" />
       <updated>1565683850548</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="默认的">
+      <created>1566563341895</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1566563341895</updated>
+    </task>
+    <task id="LOCAL-00020" summary="默认的">
+      <created>1566564941740</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1566564941740</updated>
+    </task>
+    <task id="LOCAL-00021" summary="默认的">
+      <created>1566565061250</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1566565061250</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="10747000" />
+    <option name="totallyTimeSpent" value="34712000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -404,7 +440,7 @@
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32972974" />
       <window_info anchor="bottom" id="版本控制" order="7" weight="0.32864866" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.32972974" />
-      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" weight="0.329718" />
       <window_info anchor="bottom" id="Application Servers" order="10" />
       <window_info anchor="bottom" id="运行" order="11" />
       <window_info anchor="bottom" id="Version Control" order="12" />
@@ -652,17 +688,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/FE/Array对象常用的方法.html">
+    <entry file="file://$PROJECT_DIR$/article/interview/2.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="328">
-          <caret line="208" column="29" selection-start-line="208" selection-start-column="29" selection-end-line="208" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/FE/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="384">
-          <caret line="12" column="7" selection-start-line="12" selection-start-column="7" selection-end-line="12" selection-end-column="7" />
+        <state relative-caret-position="64">
+          <caret line="2" column="6" selection-start-line="2" selection-start-column="6" selection-end-line="2" selection-end-column="6" />
         </state>
       </provider>
     </entry>
@@ -673,10 +702,42 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/article/interview/2.html">
+    <entry file="file://$PROJECT_DIR$/FE/深入理解javascript原型和闭包.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="64">
-          <caret line="2" column="6" selection-start-line="2" selection-start-column="6" selection-end-line="2" selection-end-column="6" />
+        <state relative-caret-position="808">
+          <caret line="680" column="129" selection-start-line="680" selection-start-column="129" selection-end-line="680" selection-end-column="129" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/FE/Array对象常用的方法.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1056">
+          <caret line="33" column="28" selection-start-line="33" selection-start-column="28" selection-end-line="33" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/FE/原型链.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="8" column="138" selection-start-line="8" selection-start-column="138" selection-end-line="8" selection-end-column="138" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#img#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/FE/Object.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="344">
+          <caret line="161" column="42" lean-forward="true" selection-start-line="161" selection-start-column="42" selection-end-line="161" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/FE/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="16" column="38" selection-start-line="16" selection-start-column="38" selection-end-line="16" selection-end-column="38" />
         </state>
       </provider>
     </entry>
