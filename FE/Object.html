@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content=""/>
+    <meta name="description" content=""/>
+    <meta name="format-detection" content="email=no,address=no,telephone=no"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui"/>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/demo.css"/>
+    <style type="text/css" rel="stylesheet">
+        .box{ font-size:12px; line-height:1.5;}
+        li,.pre{ white-space: pre-wrap; list-style: decimal}
+        p,.title{ font-weight:bold; color:#369; font-size:16px;}
+        .title{ margin:10px 0;}
+        .mask{ display:inline-block; margin-top:8px; padding:3px 6px; color:#e6c064; background:#282c34; border-radius:4px;}
+    </style>
+</head>
+<body>
+<div class="box">
+    <p class="title">new运算符具体干了什么</p>
+    <div class="pre">
+        var obj = {};
+        obj.__proto__ = F.prototype;
+        F.call(obj);
+        第一行，我们创建了一个空对象obj;
+        第二行，我们将这个空对象的proto成员指向了F函数对象prototype成员对象;
+        第三行，我们将F函数对象的this指针替换成obj，然后再调用F函数.
+        我们可以这么理解: 以 new 操作符调用构造函数的时候，函数内部实际上发生以下变化：
+        1、创建一个空对象，并且 this 变量引用该对象，同时还继承了该函数的原型。
+        2、属性和方法被加入到 this 引用的对象中。
+        3、新创建的对象由 this 所引用，并且最后隐式的返回 this.
+    </div>
+    <p class="title">构造函数</p>
+    <div class="pre">
+        大写字母开头一般都是构造函数
+        var a = {} 其实是 var a = new Object()的语法糖  （a 的构造函数是 Object 函数）
+        var a = [] 其实是 var a = new Array()的语法糖   （a 的构造函数是 Array 函数）
+        function Foo(){...}其实是 var Foo = new Function(...)     （Foo 的构造函数是 Function 函数）
+        使用 instanceof 判断一个函数是否是一个变量的构造函数   (判断一个变量是否为“数组”  变量 instanceof Array)
+    </div>
+    <p class="title">原型规则</p>
+    <div class="pre">
+        1.所有的引用类型（数组、对象、函数）都具有对象特性，即可自由扩展属性（除了“null”）
+        2.所有的引用类型（数组、对象、函数）都有一个 _proto_ 属性(隐式原型属性），属性值是一个普通的对象
+        3.所有的函数，都有一个 prototype(显式原型）属性，属性值也是一个普通的对象
+        4. 所有的引用类型（数组、对象、函数）， _proto_ 属性值(隐式原型属性）指向它的构造函数的“prototype”属性值
+            当试图得到一个对象的某个属性时，如果这个对象本身没有这个属性，那么会去它的_proto_(即它的构造函数的 prototype（显式原型）)中寻找
+
+    </div>
+    <p class="title">隐式原型</p>
+    <div class="pre">
+        1.	<span class="mask">person1.__proto__ 是什么？</span>
+            因为 person1.__proto__ === person1 的构造函数.prototype
+            因为 person1的构造函数 === Person
+            所以 person1.__proto__ === Person.prototype
+
+        2.	<span class="mask">Person.__proto__ 是什么？</span>
+            因为 Person.__proto__ === Person的构造函数.prototype
+            因为 Person的构造函数 === Function
+            所以 Person.__proto__ === Function.prototype
+
+        3.	<span class="mask">Person.prototype.__proto__ 是什么？</span>
+            Person.prototype 是一个普通对象，我们无需关注它有哪些属性，只要记住它是一个普通对象。
+            因为一个普通对象的构造函数 === Object
+            所以 Person.prototype.__proto__ === Object.prototype
+
+        4.	<span class="mask">Object.__proto__ 是什么？</span>
+            参照2，因为 Person 和 Object 一样都是构造函数
+
+        5.	<span class="mask">Object.prototype__proto__ 是什么？</span>
+            Object.prototype 对象也有proto属性，但它比较特殊，为 null 。因为 null 处于原型链的顶端，这个只能记住。
+            Object.prototype.__proto__ === null
+    </div>
+    <p class="title">instanceof</p>
+    <div class="pre">
+        判断一个变量是数组类型
+        <span class="mask">[] instanceof Array</span>
+        <span class="mask">Object.prototype.toString.call([]) === '[object Array]'</span>
+        <span class="mask">[].constructor === Array</span>
+        <span class="mask">Array.isArray([])</span>
+    </div>
+    <p class="title">isPrototypeOf</p>
+    <div class="pre">
+        检测一个对象是否是另一个对象的原型。或者说一个对象是否被包含在另一个对象的原型链中
+        var p = {x:1};//定义一个原型对象
+        var o = Object.create(p);//使用这个原型创建一个对象
+        p.isPrototypeOf(o);//=>true：o继承p
+        Object.prototype.isPrototypeOf(p);//=> true p继承自Object.prototype
+    </div>
+    <p class="title">hasOwnProperty</p>
+    <div class="pre">
+        检测集合成员的所属关系，判断某个属性是否存在于某个对象中。可以通过in运算符，hasOwnProperty()来完成。
+        in运算符左侧是属性名，右侧是字符串，如果对象的自由属性或者继承属性中包含这个属性则返回true。
+        对象的hasOwnProperty()方法用来检测给定的名字是否是对象的自由属性，如果是继承属性则返回false
+        <span class="mask">**hasOwnProperty** 是 JavaScript 中唯一一个处理属性但是不查找原型链的函数</span>
+        function Animal(){}//定义Animal构造函数
+        Animal.prototype = {//定义Animal原型
+            species:"动物",
+            say:function(){
+                console.log('i can say word');
+            }
+        }
+        function Cat(name,color){//定义构造函数Cat
+    　　　　this.name = name;
+    　　　　this.color = color;
+    　　}
+        var F = function(){};
+        F.prototype = Animal.prototype;
+        Cat.prototype = new F();
+        Cat.prototype.constructor = Cat;//Cat继承Animal 用F空对象作为媒介
+        var eh = new Cat('lili','white');//实例化对象
+        console.log('say' in eh)//=>true
+        console.log('name' in eh)//=>true
+        console.log('color' in eh)//=>true
+        console.log('species' in eh)=>true
+        console.log(eh.hasOwnProperty('say'))=>false  由于say为继承属性  非自有属性
+        console.log(eh.hasOwnProperty('species'))=>false 由于species为继承属性  非自有属性
+        console.log(eh.hasOwnProperty('name'))=>true
+        console.log(eh.hasOwnProperty('color'))=>true
+        for(var key in eh){
+            console.log(key);
+            if(eh.hasOwnProperty(key)){
+                console.log(key)    //=>species  say name  color
+            }
+        }
+    </div>
+    <p class="title">Object.getOwnPropertyNames()</p>
+    <div class="pre">
+        <span class="mask">Object.getOwnPropertyNames(Array.prototype)</span>
+        <span class="mask">Object.getOwnPropertyNames(Function.prototype)</span>
+    </div>
+    <p class="title">Object.setPrototypeOf()</p>
+    <div class="pre">
+        设置原型
+        <span class="mask">Object.setPrototypeOf(object, prototype)</span>
+    </div>
+    <p class="title">Object.getPrototypeOf()</p>
+    <div class="pre">
+        读取原型
+        <span class="mask">Object.getPrototypeOf(obj);</span>
+    </div>
+    <p class="title">Object.create()</p>
+    <div class="pre">
+        <span class="mask">Object.create(proto, [propertiesObject])</span> //方法创建一个新对象，使用现有的对象来提供新创建的对象的proto
+        1、proto : 必须。表示新建对象的原型对象，即该参数会被赋值到目标对象(即新对象，或说是最后返回的对象)的原型上。该参数可以是null， 对象， 函数的prototype属性 （创建空的对象时需传null , 否则会抛出TypeError异常）。
+        2、propertiesObject : 可选。 添加到新创建对象的可枚举属性（即其自身的属性，而不是原型链上的枚举属性）对象的属性描述符以及相应的属性名称。这些属性对应Object.defineProperties()的第二个参数。
+        3、返回值：
+        在指定原型对象上添加新属性后的对象。
+
+    </div>
+    <p class="title">Object.defineProperty()</p>
+    <div class="pre">
+        <span class="mask">Object.defineProperty(obj, prop, desc)</span>
+        方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象。如果不指定configurable, writable, enumerable ，则这些属性默认值为false，如果不指定value, get, set，则这些属性默认值为undefined
+        obj: 需要被操作的目标对象
+        prop: 目标对象需要定义或修改的属性的名称
+        descriptor: 将被定义或修改的属性的描述符
+            * <span class="mask">configurable</span>:表示能否通过 delete 删除属性从而重新定义属性，能否修改属性的特 性，或者能否把属性修改为访问器属性。像前面例子中那样直接在对象上定义的属性，它们的这个特性默认值为 false
+            * <span class="mask">enumerable</span>:表示能否通过 for-in 循环返回属性。像前面例子中那样直接在对象上定 义的属性，它们的这个特性默认值为 false
+            * <span class="mask">writable</span>:表示能否修改属性的值。像前面例子中那样直接在对象上定义的属性，它们的 这个特性默认值为 false
+            * <span class="mask">value</span>:包含这个属性的数据值。读取属性值的时候，从这个位置读；写入属性值的时候， 把新值保存在这个位置。这个特性的默认值为 undefined
+        var obj = new Object();
+        Object.defineProperty(obj, 'name', {
+            configurable: false,
+            writable: true,
+            enumerable: true,
+            value: '张三'
+        })
+        console.log(obj.name)  //张三
+        * 只设置configurable:false, 则该属性不可被循环, 也无法修改属性值, 无法通过defineProperty定义属性
+        * 设置configurable:false, enumerable:true, 则该属性可以被循环, 无法修改属性值
+        * 设置configurable:false, writable:true, 可以通过直接量修改属性值, 如：obj.test = 5; 也可以通过defineProperty修改value, 如Object.defineProperty(obj,'test',{ value:2 }), 不可通过defineProperty修改enumerable, 可通过defineProperty修改writable
+        * 设置configurable:true, writable:false, 不可以通过直接量修改属性值, 如：obj.test = 5; 但是可以通过defineProperty修改value, 如Object.defineProperty(obj,'test',{ value:2 }), 该属性不可循环, 可通过defineProperty修改enumerable和writable
+    </div>
+    <p class="title">Object.defineProperties()</p>
+    <div class="pre">
+        <span class="mask">Object.defineProperties(obj, props)</span>
+        方法直接在一个对象上定义一个或多个新的属性或修改现有属性，并返回该对象。
+        obj: 将要被添加属性或修改属性的对象
+        props: 该对象的一个或多个键值对定义了将要为对象添加或修改的属性的具体配置
+        var obj = new Object();
+        Object.defineProperties(obj, {
+            name: {
+                value: '张三',
+                configurable: false,
+                writable: true,
+                enumerable: true
+            },
+            age: {
+                value: 18,
+                configurable: true
+            }
+        })
+        console.log(obj.name, obj.age) // 张三, 18
+    </div>
+    <p class="title">Object.getOwnPropertyDescriptor()</p>
+    <div class="pre">
+        <span class="mask">Object.getOwnPropertyDescriptor(obj, prop)</span>
+        obj: 需要查找的目标对象
+        prop: 目标对象内属性名称
+        var person = {
+            name: '张三',
+            age: 18
+        }
+        var desc = Object.getOwnPropertyDescriptor(person, 'name');
+        console.log(desc)  结果如下
+        // {
+        //     configurable: true,
+        //     enumerable: true,
+        //     writable: true,
+        //     value: "张三"
+        // }
+
+    </div>
+    <p class="title">Object.getOwnPropertyDescriptors()</p>
+    <div class="pre">
+        <span class="mask">Object.getOwnPropertyDescriptors(obj)</span>
+        obj: 需要查找的目标对象
+        var person = {
+            name: '张三',
+            age: 18
+        }
+        var desc = Object.getOwnPropertyDescriptors(person, 'name');
+        console.log(desc)
+        //{
+        //    configurable: true,
+        //    enumerable: true,
+        //    value: '张三',
+        //    writable: true
+        //}
+    </div>
+    <p class="title"></p>
+    <div class="pre">
+
+    </div>
+    <p class="title"></p>
+    <div class="pre">
+
+    </div>
+</div>
+<script type="text/javascript" src="/js/zepto-min.js"></script>
+</body>
+</html>
