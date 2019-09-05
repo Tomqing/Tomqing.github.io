@@ -1,11 +1,14 @@
 .demo-list{padding:10px 250px; line-height:20px; font-size:14px; box-sizing:border-box;}
-.demo-list .title{ margin-bottom:10px; font-size:16px; color:#369; font-weight:bold;}
+.index-list{ margin-bottom:20px; padding:10px; line-height:20px; font-size:14px; box-sizing:border-box;}
+.demo-list .title,.index-list .title{ margin-bottom:10px; font-size:16px; color:#369; font-weight:bold;}
 .demo-list li{ margin-bottom:5px;}
-.demo-list a:link,.demo-list a:visited{ color:orange; text-decoration:underline;}
-.demo-list a:hover,.demo-list a:active{ color:gray;}
+.index-list li{ min-width:20%; margin-bottom:15px; white-space: nowrap;}
+.demo-list a:link,.demo-list a:visited,.index-list a:link,.index-list a:visited{ color:orange; text-decoration:underline;}
+.demo-list a:hover,.demo-list a:active,.index-list a:hover,.index-list a:active{ color:gray;}
 
 .w-33{ width:33%;}
 .w-100{ width:100%;}
+.mr-50{ margin-right:50px;}
 
 .nav-list{ position:fixed; left:50px; top:50px; padding:10px 0; background:rgba(0,0,0,.06);}
 .nav-list a{ display:block; padding:5px 20px; color:#369; white-space: nowrap;}

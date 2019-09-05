@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>深入理解 JavaScript 异步系列</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content="深入理解 JavaScript 异步系列"/>
+    <meta name="description" content="深入理解 JavaScript 异步系列"/>
+    <meta name="format-detection" content="email=no,address=no,telephone=no"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui"/>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/demo.css"/>
+    <style type="text/css" rel="stylesheet">
+        .demo-list{ padding-left:480px; padding-right:50px;}
+        li{ white-space: pre-wrap; list-style: none;}
+        p{ font-weight:bold; color:#333; font-size:16px;}
+        li b{ display:block;}
+    </style>
+</head>
+<body>
+<div class="nav-list">
+    <a href="#part_1">深入理解 JavaScript 异步系列（1）——基础</a>
+    <a href="#part_2">深入理解 JavaScript 异步系列（2）—— jquery的解决方案</a>
+    <a href="#part_3">深入理解 JavaScript 异步系列（3）—— ES6 中的 Promise</a>
+    <a href="#part_4">深入理解 JavaScript 异步系列（4）—— Generator</a>
+    <a href="#part_5">深入理解 JavaScript 异步系列（5）—— async await</a>
+</div>
+<a href="https://www.cnblogs.com/wangfupeng1988/p/6513070.html">转自 深入理解 JavaScript 异步系列</a>
+<ul class="demo-list">
+    <div class="title" id="part_1">深入理解 JavaScript 异步系列（1）——基础</div>
+    <li>
+        <p>第一部分，什么是异步</p>
+        <b>JS 为何会有异步</b>
+        首先记住一句话 —— JS 是单线程的语言，所谓“单线程”就是一根筋，对于拿到的程序，一行一行的执行，上面的执行为完成，就傻傻的等着。例如
+        <div class="code-box">
+            var i, t = Date.now()
+            for (i = 0; i < 100000000; i++) {
+            }
+            console.log(Date.now() - t)  // 250 （chrome浏览器）
+        </div>
+        上面的程序花费 250ms 的时间执行完成，执行过程中就会有卡顿，其他的事儿就先撂一边不管了。
+
+        执行程序这样没有问题，但是对于 JS 最初使用的环境 ———— 浏览器客户端 ———— 就不一样了。因此在浏览器端运行的 js ，可能会有大量的网络请求，而一个网络资源啥时候返回，这个时间是不可预估的。这种情况也要傻傻的等着、卡顿着、啥都不做吗？———— 那肯定不行。
+
+        因此，JS 对于这种场景就设计了异步 ———— 即，发起一个网络请求，就先不管这边了，先干其他事儿，网络请求啥时候返回结果，到时候再说。这样就能保证一个网页的流程运行。
+        <b>异步的实现原理</b>
+        <div class="code-box">
+            var ajax = $.ajax({
+                url: '/data/data1.json',
+                success: function () {
+                    console.log('success')
+                }
+            })
+        </div>
+        上面代码中$.ajax()需要传入两个参数进去，url和success，其中url是请求的路由，success是一个函数。这个函数传递过去不会立即执行，而是等着请求成功之后才能执行。对于这种传递过去不执行，等出来结果之后再执行的函数，叫做callback，即回调函数
+
+        再看一段更加能说明回调函数的 nodejs 代码。和上面代码基本一样，唯一区别就是：上面代码时网络请求，而下面代码时 IO 操作。
+        <div class="code-box">
+            var fs = require('fs')
+            fs.readFile('data1.json', (err, data) => {
+                console.log(data.toString())
+            })
+        </div>
+        从上面两个 demo 看来，实现异步的最核心原理，就是将callback作为参数传递给异步执行函数，当有结果返回之后再触发 callback执行，就是如此简单！
+        <b>常用的异步操作</b>
+        开发中比较常用的异步操作有：
+            网络请求，如ajax http.get
+            IO 操作，如readFile readdir
+            定时函数，如setTimeout setInterval
+        最后，请思考，事件绑定是不是也是异步操作？例如$btn.on('click', function() {...})。这个问题很有意思，我会再后面的章节经过分析之后给出答案，各位先自己想一下。
+        <p>第二部分，异步和 event-loop</p>
+        提到异步，就必须提 event-loop 。event-loop 中文翻译叫做“事件轮询”，它是能体现出单线程中异步操作是如何被执行的。
+
+        首先，强烈大家观看一个歪果仁的视频《what the hack is event loop》，只有不到半个小时的时间，但是将的非常详细。如果那个链接失效，访问这里（密码: xx9f）
+
+        其次，再结合阮一峰老师的《什么是event loop》一起看一下。将这两个看完就基本了解 event loop 了
+
+        最后，event-loop 是一块内容比较独立的技术性知识，它是什么样子就是什么样子，讲解起来可变通性非常小。因此，本节说一下我对 event-loop 的理解和体会
+        <b>举例说明</b>
+        给出一段简单的 js 代码，并用比较通俗、简单的说法介绍一下执行过程。详细过程还需各位去看视频，因为我没必要把半小时的视频都写到这里。
+        <div class="code-box">
+            console.log('line 1')
+            setTimeout(console.log, 1000, 'line 2')
+            console.log('line 3')
+        </div>
+        以上一共三行代码，该程序被执行的时候，会依次挨行执行
+            第一步，执行第一行，将结果line 1打印出来
+            第二步，执行第二行，注意此时会将这个操作暂时存储到其他地方，因为setTimeout是一个异步执行操作。
+            第三步，执行第三行，将结果line 3打印出出来
+            第四步，等待最后一行程序（一共三行）都全部执行完了，然后立马实时查看刚才暂存的异步操作有没有。如果有可执行的，就立即拿到出来继续执行。
+            第五步，执行完毕之后，再实时查看暂存位置中是否还有未执行的异步回调。
+        以上只拿了setTimeout举例子，但是对于网络请求、IO操作、事件绑定道理都是一样的。如果我讲的简单例子你还是看不懂，一定要去看文章最初提到的《what the hack is event loop》视频，重要重要！！！
+        <b>思考三个问题</b>
+        第一题，以下代码的输出顺序是什么
+        <div class="code-box">
+            setTimeout(console.log, 0, 'a')
+            console.log('b')
+            console.log('c')
+        </div>
+        答案是b c a，有疑问的需要再去看上面的介绍或者那个视频。
+
+        第二题，以下代码中，最后输出的结果是否是 500
+        <div class="code-box">
+            var i, t = Date.now()
+            for (i = 0; i < 100000000; i++) {
+            }
+            function fn() {
+                console.log(Date.now() - t)  // 输出多少？？？
+            }
+            setTimeout(fn, 500)
+        </div>
+        答案是大于 500ms ，因为 for 函数需要花费一些时间，等 for 执行完之后再开始计算 500ms 之后执行 fn
+
+        第三题，事件绑定是不是异步操作？
+
+        这个问题大家根据 event-loop 的讲解和视频来思考，我们下一节再给出解答。
+        <p>第三部分，事件绑定算不算异步？</p>
+        如果你认真看了上一节的 event-loop 的，你会发现原来事件绑定和异步操作的实现机制是一样的，那么事件绑定是不是就是异步操作呢？（声明一下，这里说的事件绑定是如下代码的形式）
+        <div class="code-box">
+            $btn.on('click', function (e) {
+                console.log('你点击了按钮')
+            })
+        </div>
+        PS：这个问题貌似没有加过有人讨论或者发起讨论，但是当我了解了 event-loop 之后，我就发现这两者有很大联系，很早就像讨论一下这个话题。不知道哪位同仁跟我有一样的想法？
+        <b>共同之处</b>
+        从技术实现以及书写方法上来讲，他们是一样的。例如事件绑定和 IO 操作的写法基本相同
+        <div class="code-box">
+            $btn.on('click', function (e) {
+                console.log('你点击了按钮')
+            })
+            fs.readFile('data1.json', function (err, data) {
+                // 获取数据
+            })
+        </div>
+        最终执行的方式也基本一样，都通过 evet-loop 执行。
+        <b>不同之处</b>
+        在我看来至少有两处不同。
+
+        第一，event-loop 执行时，调用的源不一样。异步操作是系统自动调用，无论是setTimeout时间到了还是$.ajax请求返回了，系统会自动调用。而事件绑定就需要用户手动触发
+
+        第二，从设计上来将，事件绑定有着明显的“订阅-发布”的设计模式，而异步操作却没有。
+        <b>我的观点</b>
+        我个人看代码比较偏重设计，一个东西是什么要看它是未什么而设计的。因此，我倾向于事件绑定不是异步操作。虽然它也是通过 event-loop 实现调用的，但是它的设计目录却和异步操作完全不一样。
+
+        其实，事件绑定在 js 中扮演着非常重要的角色，各个地方都会用到事件绑定的形式。例如 web 页面监控鼠标、键盘，以及 nodejs 中的 EventEmitter 应用非常广泛（特别是涉及到数据流时）。而事件绑定被应用到非常广泛，却没有发生像异步操作带来的程序逻辑问题，反而大家用的非常开心————这又一个两者不一样的例证。
+
+        如果你觉得我的观点有问题，也可以大胆提出自己的建议和意见，发表出来！说对说错都无所谓，也不会扣你落户积分，只要能自圆其说就是好的。
+
+    </li>
+    <div class="title" id="part_2">深入理解 JavaScript 异步系列（2）—— jquery的解决方案</div>
+    <li>
+        <p>第一部分，jQuery-1.5 之后的 ajax</p>
+        <b>传统的$.ajax</b>
+        先来一段最常见的$.ajax的代码，当然是使用万恶的callback方式
+        <div class="code-box">
+            var ajax = $.ajax({
+                url: 'data.json',
+                success: function () {
+                    console.log('success')
+                },
+                error: function () {
+                    console.log('error')
+                }
+            })
+            console.log(ajax) // 返回一个 XHR 对象
+        </div>
+        至于这么做会产生什么样子的诟病，我想大家应该都很明白了。不明白的自己私下去查，但是你也可以继续往下看，你只需要记住这样做很不好就是了，要不然 jquery 也不会再后面进行改进
+        <b>1.5 版本之后的$.ajax</b>
+        但是从v1.5开始，以上代码就可以这样写了：可以链式的执行done或者fail方法
+        <div class="code-box">
+            var ajax = $.ajax('data.json')
+            ajax.done(function () {
+                console.log('success 1')
+            })
+            .fail(function () {
+                console.log('error')
+            })
+            .done(function () {
+                console.log('success 2')
+            })
+            console.log(ajax) // 返回一个 deferred 对象
+        </div>
+        大家注意看以上两段代码中都有一个console.log(ajax)，但是返回值是完全不一样的。
+
+            v1.5之前，返回的是一个XHR对象，这个对象不可能有done或者fail的方法的
+            v1.5开始，返回一个deferred对象，这个对象就带有done和fail的方法，并且是等着请求返回之后再去调用
+
+        <b>改进之后的好处</b>
+        这是一个标志性的改造，不管这个概念是谁最先提出的，它在 jquery 中首先大量使用并让全球开发者都知道原来 ajax 请求还可以这样写。这为以后的Promise标准制定提供了很大意义的参考，你可以以为这就是后面Promise的原型。
+
+        记住一句话————虽然 JS 是异步执行的语言，但是人的思维是同步的————因此，开发者总是在寻求如何使用逻辑上看似同步的代码来完成 JS 的异步请求。而 jquery 的这一次更新，让开发者在一定程度上得到了这样的好处。
+
+        之前无论是什么操作，我都需要一股脑写到callback中，现在不用了。现在成功了就写到done中，失败了就写到fail中，如果成功了有多个步骤的操作，那我就写很多个done，然后链式连接起来就 OK 了。
+
+        <b>和后来的Promise的关系</b>
+        以上的这段代码，我们还可以这样写。即不用done和fail函数，而是用then函数。then函数的第一个参数是成功之后执行的函数（即之前的done），第二个参数是失败之后执行的函数（即之前的fail）。而且then函数还可以链式连接。
+        <div class="code-box">
+            var ajax = $.ajax('data.json')
+            ajax.then(function () {
+                console.log('success 1')
+            }, function () {
+                console.log('error 1')
+            })
+            .then(function () {
+                console.log('success 2')
+            }, function () {
+                console.log('error 2')
+            })
+        </div>
+        如果你对现在 ES6 的Promise有了解，应该能看出其中的相似之处。不了解也没关系，你只需要知道它已经和Promise比较接近了。后面马上会去讲Promise
+        <b>如何实现的？</b>
+        明眼人都知道，jquery 不可能改变异步操作需要callback的本质，它只不过是自己定义了一些特殊的 API，并对异步操作的callback进行了封装而已。
+
+        那么 jquery 是如何实现这一步的呢？请听下回分解！
+        <p>第二部分，jQuery deferred</p>
+        <b>写一个传统的异步操作</b>
+        给出一段非常简单的异步操作代码，使用setTimeout函数。
+        <div class="code-box">
+            var wait = function () {
+                var task = function () {
+                    console.log('执行完成')
+                }
+                setTimeout(task, 2000)
+            }
+            wait()
+        </div>
+        以上这些代码执行的结果大家应该都比较明确了，即 2s 之后打印出执行完成。但是我如果再加一个需求 ———— 要在执行完成之后进行某些特别复杂的操作，代码可能会很多，而且分好几个步骤 ———— 那该怎么办？ 大家思考一下！
+
+        如果你不看下面的内容，而且目前还没有Promise的这个思维，那估计你会说：直接在task函数中写就是了！不过相信你看完下面的内容之后，会放弃你现在的想法。
+        <b>使用$.Deferred封装</b>
+        好，接下来我们让刚才简单的几行代码变得更加复杂。为何要变得更加复杂？是因为让以后更加复杂的地方变得简单。这里我们使用了 jquery 的$.Deferred，至于这个是个什么鬼，大家先不用关心，只需要知道$.Deferred()会返回一个deferred对象，先看代码，deferred对象的作用我们会面会说。
+        <div class="code-box">
+            function waitHandle() {
+                var dtd = $.Deferred()  // 创建一个 deferred 对象
+
+                var wait = function (dtd) {  // 要求传入一个 deferred 对象
+                    var task = function () {
+                        console.log('执行完成')
+                        dtd.resolve()  // 表示异步任务已经完成
+                    }
+                    setTimeout(task, 2000)
+                    return dtd  // 要求返回 deferred 对象
+                }
+
+                // 注意，这里一定要有返回值
+                return wait(dtd)
+            }
+        </div>
+        以上代码中，又使用一个waitHandle方法对wait方法进行再次的封装。waitHandle内部代码，我们分步骤来分析。跟着我的节奏慢慢来，保证你不会乱。
+
+            使用var dtd = $.Deferred()创建deferred对象。通过上一节我们知道，一个deferred对象会有done fail和then方法（不明白的去看上一节）
+            重新定义wait函数，但是：第一，要传入一个deferred对象（dtd参数）；第二，当task函数（即callback）执行完成之后，要执行dtd.resolve()告诉传入的deferred对象，革命已经成功。第三；将这个deferred对象返回。
+            返回wait(dtd)的执行结果。因为wait函数中返回的是一个deferred对象（dtd参数），因此wait(dtd)返回的就是dtd————如果你感觉这里很乱，没关系，慢慢捋，一行一行看，相信两三分钟就能捋顺！
+        最后总结一下，waitHandle函数最终return wait(dtd)即最终返回dtd（一个deferred）对象。针对一个deferred对象，它有done fail和then方法（上一节说过），它还有resolve()方法（其实和resolve相对的还有一个reject方法，后面会提到）
+        <b>应用then方法</b>
+        接着上面的代码继续写
+        <div class="code-box">
+            var w = waitHandle()
+            w.then(function () {
+                console.log('ok 1')
+            }, function () {
+                console.log('err 1')
+            }).then(function () {
+                console.log('ok 2')
+            }, function () {
+                console.log('err 2')
+            })
+        </div>
+        上面已经说过，waitHandle函数最终返回一个deferred对象，而deferred对象具有done fail then方法，现在我们正在使用的是then方法。至于then方法的作用，我们上一节已经讲过了，不明白的同学抓紧回去补课。
+
+        执行这段代码，我们打印出来以下结果。可以将结果对标以下代码时哪一行。
+
+        执行完成
+        <div class="code-box">
+            ok 1
+            ok 2
+        </div>
+        此时，你再回头想想我刚才说提出的需求（要在执行完成之后进行某些特别复杂的操作，代码可能会很多，而且分好几个步骤），是不是有更好的解决方案了？
+
+        有同学肯定发现了，代码中console.log('err 1')和console.log('err 2')什么时候会执行呢 ———— 你自己把waitHandle函数中的dtd.resolve()改成dtd.reject()试一下就知道了。
+
+            dtd.resolve() 表示革命已经成功，会触发then中第一个参数（函数）的执行，
+            dtd.reject() 表示革命失败了，会触发then中第二个参数（函数）执行
+        <b>有什么问题？</b>
+        总结一下一个deferred对象具有的函数属性，并分为两组：
+
+            dtd.resolve dtd.reject
+            dtd.then dtd.done dtd.fail
+        我为何要分成两组 ———— 这两组函数，从设计到执行之后的效果是完全不一样的。第一组是主动触发用来改变状态（成功或者失败），第二组是状态变化之后才会触发的监听函数。
+
+        既然是完全不同的两组函数，就应该彻底的分开，否则很容易出现问题。例如，你在刚才执行代码的最后加上这么一行试试。
+        <div class="code-box">
+            w.reject()
+        </div>
+        <p>第三部分，jQuery promise</p>
+        上一节通过一些代码演示，知道了 jquery 的deferred对象是解决了异步中callback函数的问题
+        <b>返回promise</b>
+        我们对上一节的的代码做一点小小的改动，只改动了一行，下面注释。
+        <div class="code-box">
+            function waitHandle() {
+                var dtd = $.Deferred()
+                var wait = function (dtd) {
+                    var task = function () {
+                        console.log('执行完成')
+                        dtd.resolve()
+                    }
+                    setTimeout(task, 2000)
+                    return dtd.promise()  // 注意，这里返回的是 primise 而不是直接返回 deferred 对象
+                }
+                return wait(dtd)
+            }
+
+            var w = waitHandle() // 经过上面的改动，w 接收的就是一个 promise 对象
+            $.when(w)
+            .then(function () {
+                console.log('ok 1')
+            })
+            .then(function () {
+                console.log('ok 2')
+            })
+        </div>
+        改动的一行在这里return dtd.promise()，之前是return dtd。dtd是一个deferred对象，而dtd.promise就是一个promise对象。
+
+        promise对象和deferred对象最重要的区别，记住了————promise对象相比于deferred对象，缺少了.resolve和.reject这俩函数属性。这么一来，可就完全不一样了。
+
+        上一节我们提到一个问题，就是在程序的最后一行加一句w.reject()会导致乱套，你现在再在最后一行加w.reject()试试 ———— 保证乱套不了 ———— 而是你的程序不能执行，直接报错。因为，w是promise对象，不具备.reject属性。
+        <b>返回promise的好处</b>
+        上一节提到deferred对象有两组属性函数，而且提到应该把这两组彻底分开。现在通过上面一行代码的改动，就分开了。
+
+            waitHandle函数内部，使用dtd.resolve()来该表状态，做主动的修改操作
+            waitHandle最终返回promise对象，只能去被动监听变化（then函数），而不能去主动修改操作
+        一个“主动”一个“被动”，完全分开了。
+        <b>promise 的概念</b>
+        jquery v1.5 版本发布时间距离现在（2017年初春）已经老早之前了，那会儿大家网页标配都是 jquery 。无论里面的deferred和promise这个概念和想法最早是哪位提出来的，但是最早展示给全世界开发者的是 jquery ，这算是Promise这一概念最先的提出者。
+
+        其实本次课程主要是给大家分析 ES6 的Promise Generator和async-await，但是为何要从 jquery 开始（大家现在用 jquery 越来越少）？就是要给大家展示一下这段历史的一些起点和发展的知识。有了这些基础，你再去接受最新的概念会非常容易，因为所有的东西都是从最初顺其自然发展进化而来的，我们要去用一个发展进化的眼光学习知识，而不是死记硬背。
+    </li>
+    <div class="title" id="part_3">深入理解 JavaScript 异步系列（3）—— ES6 中的 Promise</div>
+    <li>
+        <p>第一部分，Promise 加入 ES6 标准</p>
+        <b>写一段传统的异步操作</b>
+        还是拿之前讲 jquery deferred对象时的那段setTimeout程序
+        <div class="code-box">
+            var wait = function () {
+                var task = function () {
+                    console.log('执行完成')
+                }
+                setTimeout(task, 2000)
+            }
+            wait()
+        </div>
+        之前我们使用 jquery 封装的，接下来将使用 ES6 的Promise进行封装，大家注意看有何不同。
+        <b>用Promise进行封装</b>
+        <div class="code-box">
+            const wait =  function () {
+                // 定义一个 promise 对象
+                const promise = new Promise((resolve, reject) => {
+                    // 将之前的异步操作，包括到这个 new Promise 函数之内
+                    const task = function () {
+                        console.log('执行完成')
+                        resolve()  // callback 中去执行 resolve 或者 reject
+                    }
+                    setTimeout(task, 2000)
+                })
+                // 返回 promise 对象
+                return promise
+            }
+        </div>
+        注意看看程序中的注释，那都是重点部分。从整体看来，感觉这次比用 jquery 那次简单一些，逻辑上也更加清晰一些。
+
+            将之前的异步操作那几行程序，用new Promise((resolve,reject) => {.....})包装起来，最后return即可
+            异步操作的内部，在callback中执行resolve()（表明成功了，失败的话执行reject）
+        接着上面的程序继续往下写。wait()返回的肯定是一个promise对象，而promise对象有then属性。
+
+        <div class="code-box">
+            const w = wait()
+            w.then(() => {
+                console.log('ok 1')
+            }, () => {
+                console.log('err 1')
+            }).then(() => {
+                console.log('ok 2')
+            }, () => {
+                console.log('err 2')
+            })
+        </div>
+        then还是和之前一样，接收两个参数（函数），第一个在成功时（触发resolve）执行，第二个在失败时(触发reject)时执行。而且，then还可以进行链式操作。
+
+        以上就是 ES6 的Promise的基本使用演示。看完你可能会觉得，这跟之前讲述 jquery 的不差不多吗 ———— 对了，这就是我要在之前先讲 jquery 的原因，让你感觉一篇一篇看起来如丝般顺滑！
+
+        接下来，将详细说一下 ES6 Promise 的一些比较常见的用法，敬请期待吧！
+
+        <p>第二部分，Promise 在 ES6 中的具体应用</p>
+
+        <b>准备工作</b>
+        因为以下所有的代码都会用到Promise，因此干脆在所有介绍之前，先封装一个Promise，封装一次，为下面多次应用。
+        <div class="code-box">
+            const fs = require('fs')
+            const path = require('path')  // 后面获取文件路径时候会用到
+            const readFilePromise = function (fileName) {
+                return new Promise((resolve, reject) => {
+                    fs.readFile(fileName, (err, data) => {
+                        if (err) {
+                            reject(err)  // 注意，这里执行 reject 是传递了参数，后面会有地方接收到这个参数
+                        } else {
+                            resolve(data.toString())  // 注意，这里执行 resolve 时传递了参数，后面会有地方接收到这个参数
+                        }
+                    })
+                })
+            }
+
+        </div>
+        以上代码一个一段 nodejs 代码，将读取文件的函数fs.readFile封装为一个Promise。经过上一节的学习，我想大家肯定都能看明白代码的含义，要是看不明白，你就需要回炉重造了！
+        <b>参数传递</b>
+        我们要使用上面封装的readFilePromise读取一个 json 文件../data/data2.json，这个文件内容非常简单：{"a":100, "b":200}
+
+        先将文件内容打印出来，代码如下。大家需要注意，readFilePromise函数中，执行resolve(data.toString())传递的参数内容，会被下面代码中的data参数所接收到。
+        <div class="code-box">
+            const fullFileName = path.resolve(__dirname, '../data/data2.json')
+            const result = readFilePromise(fullFileName)
+            result.then(data => {
+                console.log(data)
+            })
+        </div>
+        再加一个需求，在打印出文件内容之后，我还想看看a属性的值，代码如下。之前我们已经知道then可以执行链式操作，如果then有多步骤的操作，那么前面步骤return的值会被当做参数传递给后面步骤的函数，如下面代码中的a就接收到了return JSON.parse(data).a的值
+        <div class="code-box">
+            const fullFileName = path.resolve(__dirname, '../data/data2.json')
+            const result = readFilePromise(fullFileName)
+            result.then(data => {
+                // 第一步操作
+                console.log(data)
+                return JSON.parse(data).a  // 这里将 a 属性的值 return
+            }).then(a => {
+                // 第二步操作
+                console.log(a)  // 这里可以获取上一步 return 过来的值
+            })
+        </div>
+        总结一下，这一段内容提到的“参数传递”其实有两个方面：
+            执行resolve传递的值，会被第一个then处理时接收到
+            如果then有链式操作，前面步骤返回的值，会被后面的步骤获取到
+        <b>异常捕获</b>
+        我们知道then会接收两个参数（函数），第一个参数会在执行resolve之后触发（还能传递参数），第二个参数会在执行reject之后触发（其实也可以传递参数，和resolve传递参数一样），但是上面的例子中，我们没有用到then的第二个参数。这是为何呢 ———— 因为不建议这么用。
+
+        对于Promise中的异常处理，我们建议用catch方法，而不是then的第二个参数。请看下面的代码，以及注释。
+        <div class="code-box">
+            const fullFileName = path.resolve(__dirname, '../data/data2.json')
+            const result = readFilePromise(fullFileName)
+            result.then(data => {
+                console.log(data)
+                return JSON.parse(data).a
+            }).then(a => {
+                console.log(a)
+            }).catch(err => {
+                console.log(err.stack)  // 这里的 catch 就能捕获 readFilePromise 中触发的 reject ，而且能接收 reject 传递的参数
+            })
+        </div>
+        在若干个then串联之后，我们一般会在最后跟一个.catch来捕获异常，而且执行reject时传递的参数也会在catch中获取到。这样做的好处是：
+
+            让程序看起来更加简洁，是一个串联的关系，没有分支（如果用then的两个参数，就会出现分支，影响阅读）
+            看起来更像是try - catch的样子，更易理解
+        <b>串联多个异步操作</b>
+        如果现在有一个需求：先读取data2.json的内容，当成功之后，再去读取data1.json。这样的需求，如果用传统的callback去实现，会变得很麻烦。而且，现在只是两个文件，如果是十几个文件这样做，写出来的代码就没法看了（臭名昭著的callback-hell）。但是用刚刚学到的Promise就可以轻松胜任这项工作
+        <div class="code-box">
+            const fullFileName2 = path.resolve(__dirname, '../data/data2.json')
+            const result2 = readFilePromise(fullFileName2)
+            const fullFileName1 = path.resolve(__dirname, '../data/data1.json')
+            const result1 = readFilePromise(fullFileName1)
+
+            result2.then(data => {
+                console.log('data2.json', data)
+                return result1  // 此处只需返回读取 data1.json 的 Promise 即可
+            }).then(data => {
+                console.log('data1.json', data) // data 即可接收到 data1.json 的内容
+            })
+        </div>
+        上文“参数传递”提到过，如果then有链式操作，前面步骤返回的值，会被后面的步骤获取到。但是，如果前面步骤返回值是一个Promise的话，情况就不一样了 ———— 如果前面返回的是Promise对象，后面的then将会被当做这个返回的Promise的第一个then来对待 ———— 如果你这句话看不懂，你需要将“参数传递”的示例代码和这里的示例代码联合起来对比着看，然后体会这句话的意思。
+
+        <b>Promise.all和Promise.race的应用</b>
+        我还得继续提出更加奇葩的需求，以演示Promise的各个常用功能。如下需求：
+
+        读取两个文件data1.json和data2.json，现在我需要一起读取这两个文件，等待它们全部都被读取完，再做下一步的操作。此时需要用到Promise.all
+        <div class="code-box">
+            // Promise.all 接收一个包含多个 promise 对象的数组
+            Promise.all([result1, result2]).then(datas => {
+                // 接收到的 datas 是一个数组，依次包含了多个 promise 返回的内容
+                console.log(datas[0])
+                console.log(datas[1])
+            })
+        </div>
+        读取两个文件data1.json和data2.json，现在我需要一起读取这两个文件，但是只要有一个已经读取了，就可以进行下一步的操作。此时需要用到Promise.race
+        <div class="code-box">
+            // Promise.race 接收一个包含多个 promise 对象的数组
+            Promise.race([result1, result2]).then(data => {
+                // data 即最先执行完成的 promise 的返回值
+                console.log(data)
+            })
+        </div>
+        <b>Promise.resolve的应用</b>
+        从 jquery 引出，到此即将介绍完 ES6 的Promise，现在我们再回归到 jquery 。
+
+        大家都是到 jquery v1.5 之后$.ajax()返回的是一个deferred对象，而这个deferred对象和我们现在正在学习的Promise对象已经很接近了，但是还不一样。那么 ———— deferred对象能否转换成 ES6 的Promise对象来使用？？
+
+        答案是能！需要使用Promise.resolve来实现这一功能，请看以下代码：
+        <div class="code-box">
+            // 在浏览器环境下运行，而非 node 环境
+            cosnt jsPromise = Promise.resolve($.ajax('/whatever.json'))
+            jsPromise.then(data => {
+                // ...
+            })
+        </div>
+        注意：这里的Promise.resolve和文章最初readFilePromise函数内部的resolve函数可千万不要混了，完全是两码事儿。JS 基础好的同学一看就明白，而这里看不明白的同学，要特别注意。
+
+        实际上，并不是Promise.resolve对 jquery 的deferred对象做了特殊处理，而是Promise.resolve能够将thenable对象转换为Promise对象。什么是thenable对象？———— 看个例子
+        <div class="code-box">
+            // 定义一个 thenable 对象
+            const thenable = {
+                // 所谓 thenable 对象，就是具有 then 属性，而且属性值是如下格式函数的对象
+                then: (resolve, reject) => {
+                    resolve(200)
+                }
+            }
+
+            // thenable 对象可以转换为 Promise 对象
+            const promise = Promise.resolve(thenable)
+            promise.then(data => {
+                // ...
+            })
+        </div>
+        上面的代码就将一个thenalbe对象转换为一个Promise对象，只不过这里没有异步操作，所有的都会同步执行，但是不会报错的。
+
+        其实，在我们的日常开发中，这种将thenable转换为Promise的需求并不多。真正需要的是，将一些异步操作函数（如fs.readFile）转换为Promise（就像文章一开始readFilePromise做的那样）。这块，我们后面会在介绍Q.js库时，告诉大家一个简单的方法。
+        <b>其他</b>
+        以上都是一些日常开发中非常常用的功能，其他详细的介绍，请参考阮一峰老师的 ES6 教程 Promise 篇
+
+        最后，本节我们只是介绍了Promise的一些应用，通俗易懂拿来就用的东西，但是没有提升到理论和标准的高度。有人可能会不屑 ———— 我会用就行了，要那么空谈的理论干嘛？———— 你只会使用却上升不到理论高度，永远都是个搬砖的，搬一块砖挣一毛钱，不搬就不挣钱！ 在我看来，所有的知识应该都需要上升到理论高度，将实际应用和标准对接，知道真正的出处，才能走的长远。
+
+        下一节我们介绍 Promise/A+ 规范
+        <p>第三部分，对标一下 Promise/A+ 规范</p>
+        Promise/A 是由 CommonJS 组织制定的异步模式编程规范，后来又经过一些升级，就是当前的 Promise/A+ 规范。上一节讲述的Promise的一些功能实现，就是根据这个规范来的。
+        <b>介绍规范的核心内容</b>
+        网上有很多介绍 Promise/A+ 规范的文章，大家可以搜索来看，但是它的核心要点有以下几个，我也是从看了之后自己总结的
+
+        关于状态
+
+            promise 可能有三种状态：等待（pending）、已完成（fulfilled）、已拒绝（rejected）
+            promise 的状态只可能从“等待”转到“完成”态或者“拒绝”态，不能逆向转换，同时“完成”态和“拒绝”态不能相互转换
+        关于then方法
+
+            promise 必须实现then方法，而且then必须返回一个 promise ，同一个 promise 的then可以调用多次（链式），并且回调的执行顺序跟它们被定义时的顺序一致
+            then方法接受两个参数，第一个参数是成功时的回调，在 promise 由“等待”态转换到“完成”态时调用，另一个是失败时的回调，在 promise 由“等待”态转换到“拒绝”态时调用
+        下面挨个介绍这些规范在上一节代码中的实现，所谓理论与实践相结合。在阅读以下内容时，你要时刻准备参考上一节的代码。
+        <b>状态变化</b>
+        <div class="code-box">
+            promise 可能有三种状态：等待（pending）、已完成（fulfilled）、已拒绝（rejected）
+        </div>
+        拿到上一节的readFilePromise函数，然后执行const result = readFilePromise(someFileName)会得到一个Promise对象。
+
+            刚刚创建时，就是 等待（pending）状态
+            如果读取文件成功了，readFilePromise函数内部的callback中会自定调用resolve()，这样就变为 已完成（fulfilled）状态
+            如果很不幸读取文件失败了（例如文件名写错了，找不到文件），readFilePromise函数内部的callback中会自定调用reject()，这样就变为 已拒绝（rejeced）状态
+        <div class="code-box">
+            promise 的状态只可能从“等待”转到“完成”态或者“拒绝”态，不能逆向转换，同时“完成”态和“拒绝”态不能相互转换
+        </div>
+        这个规则还是可以参考读取文件的这个例子。从一开始准备读取，到最后无论是读取成功或是读取失败，都是不可逆的。另外，读取成功和读取失败之间，也是不能互换的。这个逻辑没有任何问题，很好理解。
+        <b>then方法</b>
+        <div class="code-box">
+            promise 必须实现then方法，而且then必须返回一个 promise ，同一个 promise 的then可以调用多次（链式），并且回调的执行顺序跟它们被定义时的顺序一致
+        </div>
+            promise对象必须实现then方法这个无需解释，没有then那就不叫promise
+            “而且then必须返回一个promise，同一个 promise 的then可以调用多次（链式）” ———— 这两句话说明了一个意思 ———— then肯定要再返回一个promise，要不然then后面怎么能再链式的跟一个then呢？
+        <div class="code-box">
+            then方法接受两个参数，第一个参数是成功时的回调，在 promise 由“等待”态转换到“完成”态时调用，另一个是失败时的回调，在 promise 由“等待”态转换到“拒绝”态时调用
+        </div>
+        <p>第四部分，Promise 真的取代 callback 了吗</p>
+        Promise 虽然改变了 JS 工程师对于异步操作的写法，但是却改变不了 JS 单线程、异步的执行模式。
+        <b>JS 异步的本质</b>
+        从最初的 ES3、4 到 ES5 再到现在的 ES6 和即将到来的 ES7，语法标准上更新很多，但是 JS 这种单线程、异步的本质是没有改变的。nodejs 中读取文件的代码一直都可以这样写
+        <div class="code-box">
+            fs.readFile('some.json', (err, data) => {
+            })
+        </div>
+        既然异步这个本质不能改变，伴随异步在一起的永远都会有callback，因为没有callback就无法实现异步。因此callback永远存在。
+        <b>Promise 只是表面的写法上的改变</b>
+        JS 工程师不会讨厌 JS 异步的本质，但是很讨厌 JS 异步操作中callback的书写方式，特别是遇到万恶的callback-hell（嵌套callback）时。
+
+        计算机的抽象思维和人的具象思维是完全不一样的，人永远喜欢看起来更加符合逻辑、更加易于阅读的程序，因此现在特别强调代码可读性。而Promise就是一种代码可读性的变化。大家感受一下这两种不同（这其中还包括异常处理，加上异常处理会更加复杂）
+
+        第一种，传统的callback方式
+        <div class="code-box">
+            fs.readFile('some1.json', (err, data) => {
+                fs.readFile('some2.json', (err, data) => {
+                    fs.readFile('some3.json', (err, data) => {
+                        fs.readFile('some4.json', (err, data) => {
+
+                        })
+                    })
+                })
+            })
+        </div>
+        第二种，Promise方式
+        <div class="code-box">
+            readFilePromise('some1.json').then(data => {
+                return readFilePromise('some2.json')
+            }).then(data => {
+                return readFilePromise('some3.json')
+            }).then(data => {
+                return readFilePromise('some4.json')
+            })
+        </div>
+        这两种方式对于代码可读性的对比，非常明显。但是最后再次强调，Promise只是对于异步操作代码可读性的一种变化，它并没有改变 JS 异步执行的本质，也没有改变 JS 中存在callback的现象。
+        <b>Promise 中不能缺少 callback</b>
+        上文已经基本给出了上一节提问的答案，但是这里还需要再加一个补充：Promise不仅仅是没有取代callback或者弃而不用，反而Promise中要使用到callback。因为，JS 异步执行的本质，必须有callback存在，否则无法实现。
+
+        再次粘贴处之前章节的封装好的一个Promise函数（进行了一点点简化）
+        <div class="code-box">
+            const readFilePromise = function (fileName) {
+                return new Promise((resolve, reject) => {
+                    fs.readFile(fileName, (err, data) => {
+                        resolve(data.toString())
+                    })
+                })
+            }
+        </div>
+        上面的代码中，promise对象的状态要从pending变化为fulfilled，就需要去执行resolve()函数。那么是从哪里执行的 ———— 还得从callback中执行resolve函数 ———— 这就是Promise也需要callback的最直接体现。
+        <b>接下来...</b>
+        一块技术“火”的程度和第三方开源软件的数量、质量以及使用情况有很大的正比关系。例如为了简化 DOM 操作，jquery 风靡全世界。Promise 用的比较多，第三方库当然就必不可少，它们极大程度的简化了 Promise 的代码。
+
+        接下来我们一起看看Q.js这个库的使用，学会了它，将极大程度提高你写 Promise 的效率。
+        <p>第五部分，使用 Q.js 库</p>
+        如果实际项目中使用Promise，还是强烈建议使用比较靠谱的第三方插件，会极大增加你的开发效率。除了将要介绍的Q.js，还有bluebird也推荐使用，去 github 自行搜索吧。
+
+        另外，使用第三方库不仅仅是提高效率，它还让你在浏览器端（不支持Promise的环境中）使用promise。
+        <b>下载和安装</b>
+        可以直接去它的 github 地址 （近 1.3W 的 star 数量说明其用户群很大）查看文档。
+
+        如果项目使用 CommonJS 规范直接 npm i q --save，如果是网页外链可寻找可用的 cdn 地址，或者干脆下载到本地。
+
+        以下我将要演示的代码，都是使用 CommonJS 规范的，因此我要演示代码之前加上引用，以后的代码演示就不重复加了。
+        <div class="code-box">
+            const Q = require('q')
+        </div>
+        <b>使用Q.nfcall和Q.nfapply</b>
+        要使用这两个函数，你得首先了解 JS 的call和apply，如果不了解，先去看看。熟悉了这两个函数之后，再回来看。
+
+        Q.nfcall就是使用call的语法来返回一个promise对象，例如
+        <div class="code-box">
+            const fullFileName = path.resolve(__dirname, '../data/data1.json')
+            const result = Q.nfcall(fs.readFile, fullFileName, 'utf-8')  // 使用 Q.nfcall 返回一个 promise
+            result.then(data => {
+                console.log(data)
+            }).catch(err => {
+                console.log(err.stack)
+            })
+        </div>
+        Q.nfapply就是使用apply的语法返回一个promise对象，例如
+        <div class="code-box">
+            const fullFileName = path.resolve(__dirname, '../data/data1.json')
+            const result = Q.nfapply(fs.readFile, [fullFileName, 'utf-8'])  // 使用 Q.nfapply 返回一个 promise
+            result.then(data => {
+                console.log(data)
+            }).catch(err => {
+                console.log(err.stack)
+            })
+        </div>
+        怎么样，体验了一把，是不是比直接自己写Promise简单多了？
+        <b>使用Q.defer</b>
+        Q.defer算是一个比较偏底层一点的 API ，用于自己定义一个promise生成器，如果你需要在浏览器端编写，而且浏览器不支持Promise，这个就有用处了。
+        <div class="code-box">
+            function readFile(fileName) {
+                const defer = Q.defer()
+                fs.readFile(fileName, (err, data) => {
+                    if (err) {
+                        defer.reject(err)
+                    } else {
+                        defer.resolve(data.toString())
+                    }
+                })
+                return defer.promise
+            }
+            readFile('data1.json')
+            .then(data => {
+                console.log(data)
+            })
+            .catch(err => {
+                console.log(err.stack)
+            })
+        </div>
+        <b>使用Q.denodeify</b>
+        我们在很早之前的一节中自己封装了一个fs.readFile的promise生成器，这里再次回顾一下
+        <div class="code-box">
+            const readFilePromise = function (fileName) {
+                return new Promise((resolve, reject) => {
+                    fs.readFile(fileName, (err, data) => {
+                        if (err) {
+                            reject(err)
+                        } else {
+                            resolve(data.toString())
+                        }
+                    })
+                })
+            }
+        </div>
+        虽然看着不麻烦，但是还是需要很多行代码来实现，如果使用Q.denodeify，一行代码就搞定了！
+        <div class="code-box">
+            const readFilePromise = Q.denodeify(fs.readFile)
+        </div>
+        Q.denodeif就是一键将fs.readFile这种有回调函数作为参数的异步操作封装成一个promise生成器，非常方便！
+        <b>使用Q.all和Q.any</b>
+        这两个其实就是对应了之前讲过的Promise.all和Promise.race，而且应用起来一模一样，不多赘述。
+        <div class="code-box">
+            const r1 = Q.nfcall(fs.readFile, 'data1.json', 'utf-8')
+            const r2 = Q.nfcall(fs.readFile, 'data2.json', 'utf-8')
+            Q.all([r1, r2]).then(arr => {
+                console.log(arr)
+            }).catch(err => {
+                console.log(err)
+            })
+        </div>
+        <b>使用Q.delay</b>
+        Q.delay，顾名思义，就是延迟的意思。例如，读取一个文件成功之后，再过五秒钟之后，再去做xxxx。这个如果是自己写的话，也挺费劲的，但是Q.delay就直接给我们分装好了。
+        <div class="code-box">
+            const result = Q.nfcall(fs.readFile, 'data1.json', 'utf-8')
+            result.delay(5000).then(data => {
+                // 得到结果
+                console.log(data.toString())
+            }).catch(err => {
+                // 捕获错误
+                console.log(err.stack)
+            })
+        </div>
+        <b>其他</b>
+        以上就是Q.js一些最常用的操作，其他的一些非常用技巧，大家可以去搜索或者去官网查看文档。
+
+        至此，ES6 Promise的所有内容就已经讲完了。但是异步操作的优化到这里没有结束，更加精彩的内容还在后面 ———— Generator
+    </li>
+    <div class="title" id="part_4">深入理解 JavaScript 异步系列（4）—— Generator</div>
+    <li>
+        <p>第一部分，ES6 中的 Generator</p>
+        <b>Generator简介</b>
+        先来一段最基础的Generator代码
+        <div class="code-box">
+            function* Hello() {
+                yield 100
+                yield (function () {return 200})()
+                return 300
+            }
+
+            var h = Hello()
+            console.log(typeof h)  // object
+
+            console.log(h.next())  // { value: 100, done: false }
+            console.log(h.next())  // { value: 200, done: false }
+            console.log(h.next())  // { value: 300, done: true }
+            console.log(h.next())  // { value: undefined, done: true }
+        </div>
+        在 nodejs 环境执行这段代码，打印出来的数据都在代码注释中了，也可以自己去试试。将这段代码简单分析一下吧
+
+            定义Generator时，需要使用function*，其他的和定义函数一样。内部使用yield，至于yield的用处以后再说
+            执行var h = Hello()生成一个Generator对象，经验验证typeof h发现不是普通的函数
+            执行Hello()之后，Hello内部的代码不会立即执行，而是出于一个暂停状态
+            执行第一个h.next()时，会激活刚才的暂停状态，开始执行Hello内部的语句，但是，直到遇到yield语句。一旦遇到yield语句时，它就会将yield后面的表达式执行，并返回执行的结果，然后又立即进入暂停状态。
+            因此第一个console.log(h.next())打印出来的是{ value: 100, done: false }，value是第一个yield返回的值，done: false表示目前处于暂停状态，尚未执行结束，还可以再继续往下执行。
+            执行第二个h.next()和第一个一样，不在赘述。此时会执行完第二个yield后面的表达式并返回结果，然后再次进入暂停状态
+            执行第三个h.next()时，程序会打破暂停状态，继续往下执行，但是遇到的不是yield而是return。这就预示着，即将执行结束了。因此最后返回的是{ value: 300, done: true }，done: true表示执行结束，无法再继续往下执行了。
+            再去执行第四次h.next()时，就只能得到{ value: undefined, done: true }，因为已经结束，没有返回值了。
+        一口气分析下来，发现并不是那么简单，虽然这只是一个最最简单的Generator入门代码 ———— 可见Generator的学习成本多高 ———— 但是一旦学会，那将受用无穷！别着急，跟着我的节奏慢慢来，一行一行代码看，你会很快深入了解Genarator
+
+        但是，你要详细看一下上面的所有步骤，争取把我写的每一步都搞明白。如果搞不明白细节，至少要明白以下几个要点：
+
+            Generator不是函数，不是函数，不是函数
+            Hello()不会立即出发执行，而是一上来就暂停
+            每次h.next()都会打破暂停状态去执行，直到遇到下一个yield或者return
+            遇到yield时，会执行yeild后面的表达式，并返回执行之后的值，然后再次进入暂停状态，此时done: false。
+            遇到return时，会返回值，执行结束，即done: true
+            每次h.next()的返回值永远都是{value: ... , done: ...}的形式
+        <b>Generator最终如何处理异步操作</b>
+        上面只是一个最基本最简单的介绍，但是我们看不到任何与异步操作相关的事情，那我们接下来就先展示一下最终我们将使用Generator如何做异步操作。
+
+        之前讲解Promise时候，依次读取多个文件，我们是这么操作的（看不明白的需要回炉重造哈），主要是使用then做链式操作。
+        <div class="code-box">
+            readFilePromise('some1.json').then(data => {
+                console.log(data)  // 打印第 1 个文件内容
+                return readFilePromise('some2.json')
+            }).then(data => {
+                console.log(data)  // 打印第 2 个文件内容
+                return readFilePromise('some3.json')
+            }).then(data => {
+                console.log(data)  // 打印第 3 个文件内容
+                return readFilePromise('some4.json')
+            }).then(data=> {
+                console.log(data)  // 打印第 4 个文件内容
+            })
+        </div>
+        而如果学会Generator那么读取多个文件就是如下这样写。先不要管如何实现的，光看一看代码，你就能比较出哪个更加简洁、更加易读、更加所谓的优雅！
+        <div class="code-box">
+            co(function* () {
+                const r1 = yield readFilePromise('some1.json')
+                console.log(r1)  // 打印第 1 个文件内容
+                const r2 = yield readFilePromise('some2.json')
+                console.log(r2)  // 打印第 2 个文件内容
+                const r3 = yield readFilePromise('some3.json')
+                console.log(r3)  // 打印第 3 个文件内容
+                const r4 = yield readFilePromise('some4.json')
+                console.log(r4)  // 打印第 4 个文件内容
+            })
+        </div>
+        不过，要学到这一步，还需要很长的路要走。不过不要惊慌，也不要请如来佛祖，跟着我的节奏来，认真看，一天包教包会是没问题的！
+        <b>接下来...</b>
+        接下来我们不会立刻讲解如何使用Generator做异步操作，而是看一看Generator是一个什么东西！说来话长，这要从 ES6 的另一个概念Iterator说起。
+        <p>第二部分，Iterator 遍历器</p>
+        ES6 中引入了很多此前没有但是却非常重要的概念，Iterator就是其中一个。Iterator对象是一个指针对象，实现类似于单项链表的数据结构，通过next()将指针指向下一个节点 ———— 这里也就是先简单做一个概念性的介绍，后面将通过实例为大家演示。
+        <b>简介Symbol数据类型</b>
+        Symbol是一个特殊的数据类型，和number string等并列，详细的教程可参考阮一峰老师 ES6 入门的 Symbol 篇。先看两句程序
+        <div class="code-box">
+            console.log(Array.prototype.slice)  // [Function: slice]
+            console.log(Array.prototype[Symbol.iterator])  // [Function: values]
+        </div>
+        数组的slice属性大家都比较熟悉了，就是一个函数，可以通过Array.prototype.slice得到。这里的slice是一个字符串，但是我们获取Array.prototype[Symbol.iterator]可以得到一个函数，只不过这里的[Symbol.iterator]是Symbol数据类型，不是字符串。但是没关系，Symbol数据类型也可以作为对象属性的key。如下：
+        <div class="code-box">
+            var obj = {}
+            obj.a = 100
+            obj[Symbol.iterator] = 200
+            console.log(obj)  // {a: 100, Symbol(Symbol.iterator): 200}
+        </div>
+        在此小节中，你只需要知道[Symbol.iterator]是一个特殊的数据类型Symbol类型，但是也可以像number string类型一样，作为对象的属性key来使用
+        <b>原生具有[Symbol.iterator]属性的数据类型</b>
+        在 ES6 中，原生具有[Symbol.iterator]属性数据类型有：数组、某些类似数组的对象（如arguments、NodeList）、Set和Map。其中，Set和Map也是 ES6 中新增的数据类型。
+        <div class="code-box">
+            // 数组
+            console.log([1, 2, 3][Symbol.iterator])  // function values() { [native code] }
+            // 某些类似数组的对象，NoeList
+            console.log(document.getElementsByTagName('div')[Symbol.iterator])  // function values() { [native code] }
+        </div>
+        原生具有[Symbol.iterator]属性数据类型有一个特点，就是可以使用for...of来取值，例如
+        <div class="code-box">
+            var item
+            for (item of [100, 200, 300]) {
+                console.log(item)
+            }
+            // 打印出：100 200 300
+            // 注意，这里每次获取的 item 是数组的 value，而不是 index ，这一点和 传统 for 循环以及 for...in 完全不一样
+        </div>
+        而具有[Symbol.iterator]属性的对象，都可以一键生成一个Iterator对象。如何生成以及生成之后什么样子，还有生成之后的作用，下文分解。
+
+        不要着急，也不要跳过本文的任何步骤，一步一步跟着我的节奏来看。
+        <b>生成Iterator对象</b>
+        定义一个数组，然后生成数组的Iterator对象
+        <div class="code-box">
+            const arr = [100, 200, 300]
+            const iterator = arr[Symbol.iterator]()  // 通过执行 [Symbol.iterator] 的属性值（函数）来返回一个 iterator 对象
+        </div>
+        好，现在生成了iterator，那么该如何使用它呢 ———— 有两种方式：next和for...of。
+
+        先说第一种，next
+        <div class="code-box">
+            console.log(iterator.next())  // { value: 100, done: false }
+            console.log(iterator.next())  // { value: 200, done: false }
+            console.log(iterator.next())  // { value: 300, done: false }
+            console.log(iterator.next())  // { value: undefined, done: true }
+        </div>
+        看到这里，再结合上一节内容，是不是似曾相识的感觉？(额，没有的话，那你就回去重新看上一节的内容吧) iterator对象可以通过next()方法逐步获取每个元素的值，以{ value: ..., done: ... }形式返回，value就是值，done表示是否到已经获取完成。
+
+        再说第二种，for...of
+        <div class="code-box">
+            let i
+            for (i of iterator) {
+                console.log(i)
+            }
+            // 打印：100 200 300
+        </div>
+        上面使用for...of遍历iterator对象，可以直接将其值获取出来。这里的“值”就对应着上面next()返回的结果的value属性
+        <b>Generator返回的也是Iterator对象</b>
+        看到这里，你大体也应该明白了，上一节演示的Generator，就是生成一个Iterator对象。因此才会有next()，也可以通过for...of来遍历。拿出上一节的例子再做一次演示：
+        <div class="code-box">
+            function* Hello() {
+                yield 100
+                yield (function () {return 200})()
+                return 300
+            }
+            const h = Hello()
+            console.log(h[Symbol.iterator])  // [Function: [Symbol.iterator]]
+        </div>
+        执行const h = Hello()得到的就是一个iterator对象，因为h[Symbol.iterator]是有值的。既然是iterator对象，那么就可以使用next()和for...of进行操作
+        <div class="code-box">
+            console.log(h.next())  // { value: 100, done: false }
+            console.log(h.next())  // { value: 200, done: false }
+            console.log(h.next())  // { value: 300, done: false }
+            console.log(h.next())  // { value: undefined, done: true }
+
+            let i
+            for (i of h) {
+                console.log(i)
+            }
+        </div>
+        这一节我们花费很大力气，从Iterator又回归到了Generator，目的就是为了看看Generator到底是一个什么东西。了解其本质，才能更好的使用它，否则总有一种抓瞎的感觉。
+
+        接下来我们就Generator具体有哪些使用场景。
+        <p>第三部分，Generator 的具体应用</p>
+        <b>next和yield参数传递</b>
+        我们之前已经知道，yield具有返回数据的功能，如下代码。yield后面的数据被返回，存放到返回结果中的value属性中。这算是一个方向的参数传递。
+        <div class="code-box">
+            function* G() {
+                yield 100
+            }
+            const g = G()
+            console.log( g.next() ) // {value: 100, done: false}
+        </div>
+        还有另外一个方向的参数传递，就是next向yield传递，如下代码。
+        <div class="code-box">
+            function* G() {
+                const a = yield 100
+                console.log('a', a)  // a aaa
+                const b = yield 200
+                console.log('b', b)  // b bbb
+                const c = yield 300
+                console.log('c', c)  // c ccc
+            }
+            const g = G()
+            g.next()    // value: 100, done: false
+            g.next('aaa') // value: 200, done: false
+            g.next('bbb') // value: 300, done: false
+            g.next('ccc') // value: undefined, done: true
+        </div>
+        捋一捋上面代码的执行过程：
+
+            执行第一个g.next()时，为传递任何参数，返回的{value: 100, done: false}，这个应该没有疑问
+            执行第二个g.next('aaa')时，传递的参数是'aaa'，这个'aaa'就会被赋值到G内部的a标量中，然后执行console.log('a', a)打印出来，最后返回{value: 200, done: false}
+            执行第三个、第四个时，道理都是完全一样的，大家自己捋一捋。
+        有一个要点需要注意，就g.next('aaa')是将'aaa'传递给上一个已经执行完了的yield语句前面的变量，而不是即将执行的yield前面的变量。这句话要能看明白，看不明白就说明刚才的代码你还没看懂，继续看。
+        <b>for...of的应用示例</b>
+        针对for...of在Iterator对象的操作之前已经介绍过了，不过这里用一个非常好的例子来展示一下。用简单几行代码实现斐波那契数列。通过之前学过的Generator知识，应该不能解读这份代码。
+        <div class="code-box">
+            function* fibonacci() {
+                let [prev, curr] = [0, 1]
+                for (;;) {
+                    [prev, curr] = [curr, prev + curr]
+                    // 将中间值通过 yield 返回，并且保留函数执行的状态，因此可以非常简单的实现 fibonacci
+                    yield curr
+                }
+            }
+            for (let n of fibonacci()) {
+                if (n > 1000) {
+                    break
+                }
+                console.log(n)
+            }
+        </div>
+
+        <b>yield*语句</b>
+        如果有两个Generator，想要在第一个中包含第二个，如下需求
+        <div class="code-box">
+            function* G1() {
+                yield 'a'
+                yield 'b'
+            }
+            function* G2() {
+                yield 'x'
+                yield 'y'
+            }
+        </div>
+        针对以上两个Generator，我的需求是：一次输出a x y b，该如何做？有同学看到这里想起了刚刚学到的for..of可以实现————不错，确实可以实现（大家也可以想想到底该如何实现）
+
+        但是，这要演示一个更加简洁的方式yield*表达式
+        <div class="code-box">
+            function* G1() {
+                yield 'a'
+                yield* G2()  // 使用 yield* 执行 G2()
+                yield 'b'
+            }
+            function* G2() {
+                yield 'x'
+                yield 'y'
+            }
+            for (let item of G1()) {
+                console.log(item)
+            }
+        </div>
+        之前学过的yield后面会接一个普通的 JS 对象，而yield*后面会接一个Generator，而且会把它其中的yield按照规则来一步一步执行。如果有多个Generator串联使用的话（例如Koa源码中），用yield*来操作非常方便。
+        <b>Generator中的this</b>
+        对于以下这种写法，大家可能会和构造函数创建对象的写法产生混淆，这里一定要注意 —— Generator 不是函数，更不是构造函数
+        <div class="code-box">
+            function* G() {}
+            const g = G()
+        </div>
+        而以下这种写法，更加不会成功。只有构造函数才会这么用，构造函数返回的是this，而Generator返回的是一个Iterator对象。完全是两码事，千万不要搞混了。
+        <div class="code-box">
+            function* G() {
+                this.a = 10
+            }
+            const g = G()
+            console.log(g.a) // 报错
+        </div>
+        <b>接下来...</b>
+        本节基本介绍了Generator的最常见的用法，但是还是没有和咱们的最终目的————异步操作————沾上关系，而且现在看来有点八竿子打不着的关系。但是话说回来，这几节内容，你也学到了不少知识啊。
+
+        别急哈，即便是下一节，它们还不会有联系，再下一节就真相大白了。下一节我们又给出一个新概念————Thunk函数
+        <p>第四部分，Thunk 函数</p>
+        要想让Generator和异步操作产生联系，就必须过thunk函数这一关。这一关过了之后，立即就可以着手异步操作的事情，因此大家再坚持坚持。至于thunk函数是什么，下文会详细演示。
+        <b>一个普通的异步函数</b>
+        就用 nodejs 中读取文件的函数为例，通常都这么写
+        <div class="code-box">
+            fs.readFile('data1.json', 'utf-8', (err, data) => {
+                // 获取文件内容
+            })
+        </div>
+        其实这个写法就是将三个参数都传递给fs.readFile这个方法，其中最后一个参数是一个callback函数。这种函数叫做 多参数函数，我们接下来做一个改造
+        <b>封装成一个thunk函数</b>
+        改造的代码如下所示。不过是不是感觉越改造越复杂了？不过请相信：你看到的复杂仅仅是表面的，这一点东西变的复杂，是为了让以后更加复杂的东西变得简单。对于个体而言，随性比较简单，遵守规则比较复杂；但是对于整体（包含很多个体）而言，大家都随性就不好控制了，而大家都遵守规则就很容易管理 ———— 就是这个道理!
+        <div class="code-box">
+            const thunk = function (fileName, codeType) {
+                // 返回一个只接受 callback 参数的函数
+                return function (callback) {
+                    fs.readFile(fileName, codeType, callback)
+                }
+            }
+            const readFileThunk = thunk('data1.json', 'utf-8')
+            readFileThunk((err, data) => {
+                // 获取文件内容
+            })
+        </div>
+        先自己看一看以上代码，应该是能看懂的，但是你可能就是看懂了却不知道这么做的意义在哪里。意义先不管，先把它看懂，意义下一节就会看到。
+
+            执行const readFileThunk = thunk('data1.json', 'utf-8')返回的其实是一个函数
+            readFileThunk这个函数，只接受一个参数，而且这个参数是一个callback函数
+        <b>thunk函数的特点</b>
+        就上上面的代码，我们经过对传统的异步操作函数进行封装，得到一个只有一个参数的函数，而且这个参数是一个callback函数，那这就是一个thunk函数。就像上面代码中readFileThunk一样。
+        <b>使用thunkify库</b>
+        上面代码的封装，是我们手动来做的，但是没遇到一个情况就需要手动做吗？在这个开源的时代当让不会这样，直接使用第三方的thunkify就好了。
+
+        首先要安装npm i thunkify --save，然后在代码的最上方引用const thunkify = require('thunkify')。最后，上面我们手动写的代码，完全可以简化成这几行，非常简单！
+        <div class="code-box">
+            const thunk = thunkify(fs.readFile)
+            const readFileThunk = thunk('data1.json', 'utf-8')
+            readFileThunk((err, data) => {
+            // 获取文件内容
+            })
+        </div>
+        <p>第五部分，Generator 与异步操作</p>
+        这一节正式开始讲解Generator如何进行异步操作，以前我们花了好几节的时间各种打基础，现在估计大家也都等急了，好戏马上开始！
+        <b>在Genertor中使用thunk函数</b>
+        这个比较简单了，之前都讲过的，直接看代码即可。代码中表达的意思，是要依次读取两个文件的内容
+        <div class="code-box">
+            const readFileThunk = thunkify(fs.readFile)
+            const gen = function* () {
+                const r1 = yield readFileThunk('data1.json')
+                console.log(r1)
+                const r2 = yield readFileThunk('data2.json')
+                console.log(r2)
+            }
+        </div>
+        <b>挨个读取两个文件的内容</b>
+        接着以上的代码继续写，注释写的非常详细，大家自己去看，看完自己写代码亲身体验。
+        <div class="code-box">
+            const g = gen()
+
+            // 试着打印 g.next() 这里一定要明白 value 是一个 thunk函数 ，否则下面的代码你都看不懂
+            // console.log( g.next() )  // g.next() 返回 {{ value: thunk函数, done: false }}
+
+            // 下一行中，g.next().value 是一个 thunk 函数，它需要一个 callback 函数作为参数传递进去
+            g.next().value((err, data1) => {
+                // 这里的 data1 获取的就是第一个文件的内容。下一行中，g.next(data1) 可以将数据传递给上面的 r1 变量，此前已经讲过这种参数传递的形式
+                // 下一行中，g.next(data1).value 又是一个 thunk 函数，它又需要一个 callback 函数作为参数传递进去
+                g.next(data1).value((err, data2) => {
+                    // 这里的 data2 获取的是第二个文件的内容，通过 g.next(data2) 将数据传递个上面的 r2 变量
+                    g.next(data2)
+                })
+            })
+        </div>
+        上面 6 行左右的代码，却用了 6 行左右的注释来解释，可见代码的逻辑并不简单，不过你还是要去尽力理解，否则接下来的内容无法继续。再说，我已经写的那么详细了，你只要照着仔细看肯定能看明白的。
+
+        也许上面的代码给你带来的感觉并不好，第一它逻辑复杂，第二它也不是那么易读、简洁呀，用Generator实现异步操作就是这个样子的？———— 当然不是，继续往下看。
+        <b>自驱动流程</b>
+        以上代码中，读取两个文件的内容都是手动一行一行写的，而我们接下来要做一个自驱动的流程，定义好Generator的代码之后，就让它自动执行。完整的代码如下所示：
+        <div class="code-box">
+            // 自动流程管理的函数
+            function run(generator) {
+                const g = generator()
+                function next(err, data) {
+                    const result = g.next(data)  // 返回 { value: thunk函数, done: ... }
+                    if (result.done) {
+                        // result.done 表示是否结束，如果结束了那就 return 作罢
+                        return
+                    }
+                    result.value(next)  // result.value 是一个 thunk 函数，需要一个 callback 函数作为参数，而 next 就是一个 callback 形式的函数
+                }
+                next() // 手动执行以启动第一次 next
+            }
+
+            // 定义 Generator
+            const readFileThunk = thunkify(fs.readFile)
+            const gen = function* () {
+                const r1 = yield readFileThunk('data1.json')
+                console.log(r1.toString())
+                const r2 = yield readFileThunk('data2.json')
+                console.log(r2.toString())
+            }
+
+            // 启动执行
+            run(gen)
+        </div>
+        其实这段代码和上面的手动编写读取两个文件内容的代码，原理上是一模一样的，只不过这里把流程驱动给封装起来了。我们简单分析一下这段代码
+
+            最后一行run(gen)之后，进入run函数内部执行
+            先const g = generator()创建Generator实例，然后定义一个next方法，并且立即执行next()
+            注意这个next函数的参数是err, data两个，和我们fs.readFile用到的callback函数形式完全一样
+            第一次执行next时，会执行const result = g.next(data)，而g.next(data)返回的是{ value: thunk函数, done: ... }，value是一个thunk函数，done表示是否结束
+            如果done: true，那就直接return了，否则继续进行
+        result.value是一个thunk函数，需要接受一个callback函数作为参数传递进去，因此正好把next给传递进去，让next一直被执行下去
+        大家照着这个过程来捋一捋，不是特别麻烦，然后自己试着写完运行一下，基本就能了解了。
+        <b>使用co库</b>
+        刚才我们定义了一个run还是来做自助流程管理，是不是每次使用都得写一遍run函数呢？———— 肯定不是的，直接用大名鼎鼎的co就好了。用Generator的工程师，肯定需要用到co，两者天生一对，难舍难分。
+
+        使用之前请安装npm i co --save，然后在文件开头引用const co = require('co')。co到底有多好用，我们将刚才的代码用co重写，就变成了如下代码。非常简洁
+        <div class="code-box">
+            // 定义 Generator
+            const readFileThunk = thunkify(fs.readFile)
+            const gen = function* () {
+                const r1 = yield readFileThunk('data1.json')
+                console.log(r1.toString())
+                const r2 = yield readFileThunk('data2.json')
+                console.log(r2.toString())
+            }
+            const c = co(gen)
+        </div>
+        而且const c = co(gen)返回的是一个Promise对象，可以接着这么写
+        <div class="code-box">
+            c.then(data => {
+                console.log('结束')
+            })
+        </div>
+        <b>co库和Promise</b>
+        刚才提到co()最终返回的是Promise对象，后知后觉，我们已经忘记Promise好久了，现在要重新把它拾起来。如果使用co来处理Generator的话，其实yield后面可以跟thunk函数，也可以跟Promise对象。
+
+        thunk函数上文一直在演示，下面演示一下Promise对象的，也权当再回顾一下久别的Promise。其实从形式上和结果上，都跟thunk函数一样。
+        <div class="code-box">
+            const readFilePromise = Q.denodeify(fs.readFile)
+
+            const gen = function* () {
+                const r1 = yield readFilePromise('data1.json')
+                console.log(r1.toString())
+                const r2 = yield readFilePromise('data2.json')
+                console.log(r2.toString())
+            }
+
+            co(gen)
+
+        </div>
+
+        <p>第六部分，koa 中使用 Generator</p>
+        koa 是一个 nodejs 开发的 web 框架，所谓 web 框架就是处理 http 请求的。开源的 nodejs 开发的 web 框架最初是 express。
+
+        我们此前说过，既然是处理 http 请求，是一种网络操作，肯定就会用到异步操作。express 使用的异步操作是传统的callbck，而 koa 用的是我们刚刚讲的Generator（koa v1.x用的是Generator，已经被广泛使用，而 koa v2.x用到了 ES7 中的async-await，不过因为 ES7 没有正式发布，所以 koa v2.x也没有正式发布，不过可以试用）
+
+        koa 是由 express 的原班开发人员开发的，比 express 更加简洁易用，因此 koa 是目前最为推荐的 nodejs web 框架。阿里前不久就依赖于 koa 开发了自己的 nodejs web 框架 egg
+
+        国内可以通过koa.bootcss.com查阅文档，不过这网站依赖了 Google 的服务，因此如果不科学上网，估计会访问会很慢。
+
+        提醒：如果你是初学Generator而且从来没有用过 koa ，那么这一节你如果看不懂，没有问题。看不懂就不要强求，可以忽略，继续往下看！
+        <b>koa 中如何应用Generator</b>
+        koa 是一个 web 框架，处理 http 请求，但是这里我们不去管它如何处理 http 请求，而是直接关注它使用Genertor的部分————中间件。
+
+        例如，我们现在要用 3 个Generator输出12345，我们如下代码这么写。应该能看明白吧？看不明白回炉重造！
+        <div class="code-box">
+            let info = ''
+            function* g1() {
+                info += '1'  // 拼接 1
+                yield* g2()  // 拼接 234
+                info += '5'  // 拼接 5
+            }
+            function* g2() {
+                info += '2'  // 拼接 2
+                yield* g3()  // 拼接 3
+                info += '4'  // 拼接 4
+            }
+            function* g3() {
+                info += '3'  // 拼接 3
+            }
+
+            var g = g1()
+            g.next()
+            console.log(info)  // 12345
+        </div>
+        但是如果用 koa 的 中间件 的思路来做，就需要如下这么写。
+        <div class="code-box">
+            app.use(function *(next){
+                this.body = '1';
+                yield next;
+                this.body += '5';
+                console.log(this.body);
+            });
+            app.use(function *(next){
+                this.body += '2';
+                yield next;
+                this.body += '4';
+            });
+            app.use(function *(next){
+                this.body += '3';
+            });
+        </div>
+        解释几个关键点
+            app.use()中传入的每一个Generator就是一个 中间件，中间件按照传入的顺序排列，顺序不能乱
+            每个中间件内部，next表示下一个中间件。yield next就是先将程序暂停，先去执行下一个中间件，等next被执行完之后，再回过头来执行当前代码的下一行。因此，koa 的中间件执行顺序是一种洋葱圈模型，不过这里看不懂也没问题。
+            每个中间件内部，this可以共享变量。即第一个中间件改变了this的属性，在第二个中间件中可以看到效果。
+        <b>koa 的这种应用机制是如何实现的</b>
+        前方高能————上面介绍 koa 的中间价估计有些新人就开始蒙圈了，不过接下来还有更加有挑战难度的，就是以上这种方式是如何实现的。你就尽量去看，看懂了更好，看不懂也没关系————当然，你完全可以选择跳过本教程直接去看下一篇，这都 OK
+
+        加入我们自己实现一个简单的 koa ———— MyKoa ，那么仅需要几十行代码就可以搞定上面的问题。直接写代码，注意看重点部分的注释
+        <div class="code-box">
+            class MyKoa extends Object {
+                constructor(props) {
+                    super(props);
+
+                    // 存储所有的中间件
+                    this.middlewares = []
+                }
+
+                // 注入中间件
+                use (generator) {
+                    this.middlewares.push(generator)
+                }
+
+                // 执行中间件
+                listen () {
+                    this._run()
+                }
+
+                _run () {
+                    const ctx = this
+                    const middlewares = ctx.middlewares
+                    co(function* () {
+                        let prev = null
+                        let i = middlewares.length
+                        //从最后一个中间件到第一个中间件的顺序开始遍历
+                        while (i--) {
+                            // ctx 作为函数执行时的 this 才能保证多个中间件中数据的共享
+                            //prev 将前面一个中间件传递给当前中间件，才使得中间件里面的 next 指向下一个中间件
+                            prev = middlewares[i].call(ctx, prev);
+                        }
+                        //执行第一个中间件
+                        yield prev;
+                    })
+                }
+            }
+        </div>
+        最后我们执行代码实验一下效果
+        <div class="code-box">
+            var app = new MyKoa();
+            app.use(function *(next){
+                this.body = '1';
+                yield next;
+                this.body += '5';
+                console.log(this.body);  // 12345
+            });
+            app.use(function *(next){
+                this.body += '2';
+                yield next;
+                this.body += '4';
+            });
+            app.use(function *(next){
+                this.body += '3';
+            });
+            app.listen();
+        </div>
+        <b>接下来...</b>
+        Generator的应用基本讲完，从一开始的基础到后面应用到异步操作，再到本节的高级应用 koa ，算是比较全面了。接下来，我们要再回到最初的起点，探讨Generator的本质，以及它和callback的关系。
+
+        还是那句话，搞明白原理，才能用的更加出色！
+        <p>第七部分，Generator 的本质是什么？是否取代了 callback</p>
+        其实标题中的问题，是一个伪命题，因为Generator和callback根本没有任何关系，只是我们通过一些方式（而且是很复杂的方式）强行将他俩产生了关系，才会有现在的Generator处理异步。
+        <b>Generator的本质</b>
+        介绍Generator的第一节中，多次提到 暂停 这个词 ———— “暂停”才是Generator的本质 ———— 只有Generator能让一段程序执行到指定的位置先暂停，然后再启动，再暂停，再启动。
+
+        而这个 暂停 就很容易让它和异步操作产生联系，因为我们在处理异步操作时，即需要一种“开始读取文件，然后暂停一下，等着文件读取完了，再干嘛干嘛...”这样的需求。因此将Generator和异步操作联系在一起，并且产生一些比较简明的解决方案，这是顺其自然的事儿，大家要想明白这个道理。
+
+        不过，JS 还是 JS，单线程还是单线程，异步还是异步，callback还是callback。这一切都不会因为有一个Generator而有任何变化。
+        <b>和callback的结合</b>
+        之前在介绍Promise的最后，拿Promise和callback做过一些比较，最后发现Promise其实是利用了callback才能实现的。而这里，Generator也必须利用callback才能实现。
+
+        拿介绍co时的代码举例（代码如下），如果yield后面用的是thunk函数，那么thunk函数需要的就是一个callback参数。如果yield后面用的是Promise对象，Promise和callback的联系之前已经介绍过了。
+        <div class="code-box">
+            co(function* () {
+                const r1 = yield readFilePromise('some1.json')
+                console.log(r1)  // 打印第 1 个文件内容
+                const r2 = yield readFileThunk('some2.json')
+                console.log(r2)  // 打印第 2 个文件内容
+            })
+        </div>
+        因此，Generator离不开callback，Promise离不开callback，异步也离不开callback。
+
+    </li>
+    <div class="title" id="part_5">深入理解 JavaScript 异步系列（5）—— async await</div>
+    <li>
+        <p>第一部分，ES7 中引入 async-await</p>
+        前面介绍完了Generator的异步处理，可以说是跌跌撞撞，经过各种基础介绍和封装，好容易出了一个比较简洁的异步处理方案，学习成本非常高————这显然不是我们想要的！
+
+        因此，还未发布的 ES7 就干脆自己参照Generator封装了一套异步处理方案————async-await。说是参照，其实可以理解为是Generator的语法糖！
+        <b>Generator和async-await的对比</b>
+        先来一段Generator处理异步的代码，前面已经介绍过了，看不明白的再获取接着看。
+        <div class="code-box">
+            co(function* () {
+                const r1 = yield readFilePromise('some1.json')
+                console.log(r1)  // 打印第 1 个文件内容
+                const r2 = yield readFilePromise('some2.json')
+                console.log(r2)  // 打印第 2 个文件内容
+            })
+        </div>
+        再来一段async-await的执行代码如下，两者做一个比较。
+        <div class="code-box">
+            const readFilePromise = Q.denodeify(fs.readFile)
+
+            // 定义 async 函数
+            const readFileAsync = async function () {
+                const f1 = await readFilePromise('data1.json')
+                const f2 = await readFilePromise('data2.json')
+                console.log('data1.json', f1.toString())
+                console.log('data2.json', f2.toString())
+
+                return 'done' // 先忽略，后面会讲到
+            }
+            // 执行
+            const result = readFileAsync()
+        </div>
+        从上面两端代码比较看来，async function代替了function*，await代替了yield，其他的再没有什么区别了。哦，还有，使用async-await时候不用再引用co这种第三方库了，直接执行即可。
+        <b>使用async-await的不同和好处</b>
+        第一，await后面不能再跟thunk函数，而必须跟一个Promise对象（因此，Promise才是异步的终极解决方案和未来）。跟其他类型的数据也OK，但是会直接同步执行，而不是异步。
+
+        第二，执行const result = readFileAsync()返回的是个Promise对象，而且上面代码中的return 'done'会直接被下面的then函数接收到
+        <div class="code-box">
+            result.then(data => {
+                console.log(data)  // done
+            })
+        </div>
+        第三，从代码的易读性来将，async-await更加易读简介，也更加符合代码的语意。而且还不用引用第三方库，也无需学习Generator那一堆东西，使用成本非常低。
+
+        因此，如果 ES7 正式发布了之后，强烈推荐使用async-await。但是现在尚未正式发布，从稳定性考虑，还是Generator更好一些。
+        <b>接下来...</b>
+        node v7 版本已经开始原生支持async-await了，不过 node 的目前稳定版本还是v6，尚不支持，怎么办？———— 当然是万能的babel！下一节就介绍。
+        <p>第二部分，如何在 nodejs v6.x版本中使用 async-await</p>
+        本节介绍一下如何使用babel来让 node v6 版本也能运行async-await
+        <b>安装必要的插件</b>
+        运行npm i babel-core babel-plugin-transform-runtime babel-preset-es2015 babel-preset-stage-3 babel-runtime --save安装一堆需要的插件。
+
+        然后在项目根目录创建.babelrc文件，文件内容编写为
+        <div class="code-box">
+            {
+                "presets": ["stage-3", "es2015"],
+                "plugins": ["transform-runtime"]
+            }
+        </div>
+        <b>创建入口文件并执行</b>
+        加入你编写async-await的代码文件是test.js，那么你需要创建另一个文件，例如test-entry.js作为入口文件。入口文件内容编写为
+        <div class="code-box">
+            require("babel-core/register");
+            require("./test.js");
+        </div>
+        然后直接运行node test-entry.js就可以了
+        <p>第三部分，整体总结</p>
+        <b>基础知识不可忽略</b>
+        这里的基础知识分为两部分，都不能忽略，都需要深入研究和思考
+
+            什么是异步，异步的实现原理，event-loop，以及和事件绑定的关系。这些在最初介绍时，都讲过，不要看完了就忘记了；
+            无论异步操作的写法如何变化，JS 还是单线程、异步执行的语言，callback一直都存在而且发挥作用，这个在此前的章节一直强调；
+        <b>异步操作代码的变化</b>
+        最后我们来感受一下，从一开始callback方式到后来的async-await方式，前前后后编写异步代码的变化。从变化中就可以体会到，确实越来越简洁，越来越易读。
+
+        callback方式
+        <div class="code-box">
+            fs.readFile('some1.json', (err, data) => {
+                fs.readFile('some2.json', (err, data) => {
+                    fs.readFile('some3.json', (err, data) => {
+                        fs.readFile('some4.json', (err, data) => {
+
+                        })
+                    })
+                })
+            })
+        </div>
+        Promise方式
+        <div class="code-box">
+            readFilePromise('some1.json').then(data => {
+                return readFilePromise('some2.json')
+            }).then(data => {
+                return readFilePromise('some3.json')
+            }).then(data => {
+                return readFilePromise('some4.json')
+            })
+        </div>
+        Generator方式
+        <div class="code-box">
+            co(function* () {
+                const r1 = yield readFilePromise('some1.json')
+                const r2 = yield readFilePromise('some2.json')
+                const r3 = yield readFilePromise('some3.json')
+                const r4 = yield readFilePromise('some4.json')
+            })
+        </div>
+        async-await方式
+        <div class="code-box">
+            const readFileAsync = async function () {
+                const f1 = await readFilePromise('data1.json')
+                const f2 = await readFilePromise('data2.json')
+                const f3 = await readFilePromise('data3.json')
+                const f4 = await readFilePromise('data4.json')
+            }
+        </div>
+    </li>
+</ul>
+<script type="text/javascript" src="/js/zepto-min.js"></script>
+</body>
+</html>
