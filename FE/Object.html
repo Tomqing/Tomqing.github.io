@@ -19,8 +19,25 @@
     </style>
 </head>
 <body>
-<div class="box">
-    <p class="title">new运算符具体干了什么</p>
+<div class="nav-list">
+    <a href="#object_1">new运算符具体干了什么</a>
+    <a href="#object_2">构造函数</a>
+    <a href="#object_3">原型规则</a>
+    <a href="#object_4">隐式原型</a>
+    <a href="#object_5">instanceof</a>
+    <a href="#object_6">isPrototypeOf</a>
+    <a href="#object_7">hasOwnProperty</a>
+    <a href="#object_8">getOwnPropertyNames</a>
+    <a href="#object_9">setPrototypeOf</a>
+    <a href="#object_10">getPrototypeOf</a>
+    <a href="#object_11">create</a>
+    <a href="#object_12">defineProperty</a>
+    <a href="#object_13">defineProperties</a>
+    <a href="#object_14">getOwnPropertyDescriptor</a>
+    <a href="#object_15">getOwnPropertyDescriptors</a>
+</div>
+<div class="demo-list">
+    <p class="title" id="object_1">new运算符具体干了什么</p>
     <div class="pre">
         var obj = {};
         obj.__proto__ = F.prototype;
@@ -33,7 +50,7 @@
         2、属性和方法被加入到 this 引用的对象中。
         3、新创建的对象由 this 所引用，并且最后隐式的返回 this.
     </div>
-    <p class="title">构造函数</p>
+    <p class="title" id="object_2">构造函数</p>
     <div class="pre">
         大写字母开头一般都是构造函数
         var a = {} 其实是 var a = new Object()的语法糖  （a 的构造函数是 Object 函数）
@@ -41,7 +58,7 @@
         function Foo(){...}其实是 var Foo = new Function(...)     （Foo 的构造函数是 Function 函数）
         使用 instanceof 判断一个函数是否是一个变量的构造函数   (判断一个变量是否为“数组”  变量 instanceof Array)
     </div>
-    <p class="title">原型规则</p>
+    <p class="title" id="object_3">原型规则</p>
     <div class="pre">
         1.所有的引用类型（数组、对象、函数）都具有对象特性，即可自由扩展属性（除了“null”）
         2.所有的引用类型（数组、对象、函数）都有一个 _proto_ 属性(隐式原型属性），属性值是一个普通的对象
@@ -50,7 +67,7 @@
             当试图得到一个对象的某个属性时，如果这个对象本身没有这个属性，那么会去它的_proto_(即它的构造函数的 prototype（显式原型）)中寻找
 
     </div>
-    <p class="title">隐式原型</p>
+    <p class="title" id="object_4">隐式原型</p>
     <div class="pre">
         1.	<span class="mask">person1.__proto__ 是什么？</span>
             因为 person1.__proto__ === person1 的构造函数.prototype
@@ -74,7 +91,7 @@
             Object.prototype 对象也有proto属性，但它比较特殊，为 null 。因为 null 处于原型链的顶端，这个只能记住。
             Object.prototype.__proto__ === null
     </div>
-    <p class="title">instanceof</p>
+    <p class="title" id="object_5">instanceof</p>
     <div class="pre">
         判断一个变量是数组类型
         <span class="mask">[] instanceof Array</span>
@@ -82,7 +99,7 @@
         <span class="mask">[].constructor === Array</span>
         <span class="mask">Array.isArray([])</span>
     </div>
-    <p class="title">isPrototypeOf</p>
+    <p class="title" id="object_6">isPrototypeOf</p>
     <div class="pre">
         检测一个对象是否是另一个对象的原型。或者说一个对象是否被包含在另一个对象的原型链中
         var p = {x:1};//定义一个原型对象
@@ -90,7 +107,7 @@
         p.isPrototypeOf(o);//=>true：o继承p
         Object.prototype.isPrototypeOf(p);//=> true p继承自Object.prototype
     </div>
-    <p class="title">hasOwnProperty</p>
+    <p class="title" id="object_7">hasOwnProperty</p>
     <div class="pre">
         检测集合成员的所属关系，判断某个属性是否存在于某个对象中。可以通过in运算符，hasOwnProperty()来完成。
         in运算符左侧是属性名，右侧是字符串，如果对象的自由属性或者继承属性中包含这个属性则返回true。
@@ -127,22 +144,22 @@
             }
         }
     </div>
-    <p class="title">Object.getOwnPropertyNames()</p>
+    <p class="title" id="object_8">Object.getOwnPropertyNames()</p>
     <div class="pre">
         <span class="mask">Object.getOwnPropertyNames(Array.prototype)</span>
         <span class="mask">Object.getOwnPropertyNames(Function.prototype)</span>
     </div>
-    <p class="title">Object.setPrototypeOf()</p>
+    <p class="title" id="object_9">Object.setPrototypeOf()</p>
     <div class="pre">
         设置原型
         <span class="mask">Object.setPrototypeOf(object, prototype)</span>
     </div>
-    <p class="title">Object.getPrototypeOf()</p>
+    <p class="title" id="object_10">Object.getPrototypeOf()</p>
     <div class="pre">
         读取原型
         <span class="mask">Object.getPrototypeOf(obj);</span>
     </div>
-    <p class="title">Object.create()</p>
+    <p class="title" id="object_11">Object.create()</p>
     <div class="pre">
         <span class="mask">Object.create(proto, [propertiesObject])</span> //方法创建一个新对象，使用现有的对象来提供新创建的对象的proto
         1、proto : 必须。表示新建对象的原型对象，即该参数会被赋值到目标对象(即新对象，或说是最后返回的对象)的原型上。该参数可以是null， 对象， 函数的prototype属性 （创建空的对象时需传null , 否则会抛出TypeError异常）。
@@ -151,7 +168,7 @@
         在指定原型对象上添加新属性后的对象。
 
     </div>
-    <p class="title">Object.defineProperty()</p>
+    <p class="title" id="object_12">Object.defineProperty()</p>
     <div class="pre">
         <span class="mask">Object.defineProperty(obj, prop, desc)</span>
         方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象。如果不指定configurable, writable, enumerable ，则这些属性默认值为false，如果不指定value, get, set，则这些属性默认值为undefined
@@ -175,7 +192,7 @@
         * 设置configurable:false, writable:true, 可以通过直接量修改属性值, 如：obj.test = 5; 也可以通过defineProperty修改value, 如Object.defineProperty(obj,'test',{ value:2 }), 不可通过defineProperty修改enumerable, 可通过defineProperty修改writable
         * 设置configurable:true, writable:false, 不可以通过直接量修改属性值, 如：obj.test = 5; 但是可以通过defineProperty修改value, 如Object.defineProperty(obj,'test',{ value:2 }), 该属性不可循环, 可通过defineProperty修改enumerable和writable
     </div>
-    <p class="title">Object.defineProperties()</p>
+    <p class="title" id="object_13">Object.defineProperties()</p>
     <div class="pre">
         <span class="mask">Object.defineProperties(obj, props)</span>
         方法直接在一个对象上定义一个或多个新的属性或修改现有属性，并返回该对象。
@@ -196,7 +213,7 @@
         })
         console.log(obj.name, obj.age) // 张三, 18
     </div>
-    <p class="title">Object.getOwnPropertyDescriptor()</p>
+    <p class="title" id="object_14">Object.getOwnPropertyDescriptor()</p>
     <div class="pre">
         <span class="mask">Object.getOwnPropertyDescriptor(obj, prop)</span>
         obj: 需要查找的目标对象
@@ -215,7 +232,7 @@
         // }
 
     </div>
-    <p class="title">Object.getOwnPropertyDescriptors()</p>
+    <p class="title" id="object_15">Object.getOwnPropertyDescriptors()</p>
     <div class="pre">
         <span class="mask">Object.getOwnPropertyDescriptors(obj)</span>
         obj: 需要查找的目标对象
@@ -232,11 +249,11 @@
         //    writable: true
         //}
     </div>
-    <p class="title"></p>
+    <p class="title" id="object_16"></p>
     <div class="pre">
 
     </div>
-    <p class="title"></p>
+    <p class="title" id="object_17"></p>
     <div class="pre">
 
     </div>

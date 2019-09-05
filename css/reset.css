@@ -15,7 +15,7 @@ strong,b { font-weight: bold;}
 i,em { font-style: normal;}
 ul,ol,li,dl,dt,dd { list-style-type: none;}
 html {height:100%;font-family:"Microsoft YaHei","Helvetica","Helvetica Neue",sans-serif; font-size: 625%;  line-height: 1.5; background-color: #fff; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;}
-body{min-height:100%; max-width:1000px; margin:0 auto; padding:20px; font-size:14px; color:#333;}
+body{min-height:100%; margin:0 auto; padding:20px; font-size:14px; color:#333;}
 /* 清除浮动 */
 .clearfix:before,.clearfix:after {display: table;content:'';}
 .clearfix:after { clear: both; }
