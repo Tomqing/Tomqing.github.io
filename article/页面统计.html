@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>页面统计</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content="页面统计"/>
+    <meta name="description" content="页面统计"/>
+    <meta name="format-detection" content="email=no,address=no,telephone=no"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui"/>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/demo.css"/>
+    <style type="text/css" rel="stylesheet">
+        li{ white-space: pre-wrap; list-style: decimal}
+        p{ font-weight:bold; color:#369; font-size:16px;}
+    </style>
+</head>
+<body>
+<p>页面跳转时，统计数据有时候会丢失</p>
+业务中经常遇到统计埋点的需求：
+1、用户轨迹，点击、鼠标移动等
+2、滚屏
+3、访问时间
+4、访问量，UV、PV
+但是，有时候在跳转的时候，当前页onload发送的请求，比如访问时长、点击数等并没有发送给服务端，网络请求状态是canceled
+有几种解决方案：
+<ul class="demo-list">
+    <li>阻塞Ajax请求
+        <div class="code-box">
+            window.addEventListener('unload', function(event) {
+                var xhr = new XMLHttpRequest(),
+                xhr.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
+                xhr.open('post', '/', false); // 同步请求
+                xhr.send(data);
+            });
+        </div>
+    </li>
+    <li>阻塞页面跳转
+        <div class="code-box">
+            window.addEventListener('unload', function(event) {
+                send(data);
+                var now = +new Date;
+                while(new Date - now >= 10) {
+                    // 阻塞 10ms
+                }
+            });
+        </div>
+    </li>
+    <li>图片阻塞
+        <div class="code-box">
+            window.addEventListener('unload', function(event) {
+                send(data);
+                (new Image).src = '/b.gif';
+            });
+        </div>
+    </li>
+    <li>url传参
+        需要在页面中部署同一套统计脚本
+    </li>
+    <li>sendBeacon
+        <div class="code-box">
+            window.addEventListener('unload', function(event) {
+                navigator.sendBeacon('/', data);
+            });
+        </div>
+    </li>
+    <li>
+        <div class="code-box">
+
+        </div>
+    </li>
+</ul>
+<script type="text/javascript" src="/js/zepto-min.js"></script>
+</body>
+</html>

@@ -20,7 +20,15 @@
     <li><p>获取n到m之间的随机整数</p>
         Math.round(Math.random()*(m-n)+n)
     </li>
-    <li></li>
+    <li>
+        <p>绑定事件时event+传参</p>
+        function func(e,x,y){
+            console.log(e,x,y);
+        }
+        btn.addEventListener("click",function(event){
+            func(event,1,2);
+        },false)；
+    </li>
     <li></li>
     <li></li>
     <li></li>

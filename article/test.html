@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head lang="zh-CN">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <title></title>
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/demo.css"/>
+</head>
+<body>
+1、
+<div class="code-box pre">
+a:
+for(var i =0;i<10;i++){
+    var a = document.createElement('a');
+    a.innerHTML = i+'&lt;br/&gt;';
+    var fun = (function (i){
+        console.log('fun:'+i);
+        return function(){
+            console.log(i);
+        }}
+    )(i);
+    a.addEventListener('click',function(e){
+        fun();
+    });
+    document.body.appendChild(a);
+}
+b:
+for(var i =0;i<10;i++){
+    var a = document.createElement('a');
+    (function(i){
+        a.innerHTML = i+'&lt;br/&gt;';
+        a.addEventListener('click',function(e){
+            console.log(e,i);
+        });
+    })(i);
+    document.body.appendChild(a);
+}
+</div>
+a、b差别在哪？
+a的闭包没问题，里面的i也确实是正确的，但是fun这个方法每次都被覆盖了；所以最后点击的时候都是最后一个fun方法
+正确做法：对绑定事件做闭包处理
+</body>
+</html>

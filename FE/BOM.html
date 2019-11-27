@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>BOM</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content="BOM"/>
+    <meta name="description" content="BOM"/>
+    <meta name="format-detection" content="email=no,address=no,telephone=no"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui"/>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/demo.css"/>
+    <style type="text/css" rel="stylesheet">
+        li{ list-style: decimal}
+        p{ font-weight:bold; color:#369; font-size:16px;}
+        .demo-list{ padding-left:340px; padding-right:10px;}
+    </style>
+</head>
+<body>
+<ul class="demo-list">
+    <li><p>location</p>
+        location.href
+        location.protocol
+        location.host
+        location.pathname
+        location.search
+        location.hash
+    </li>
+    <li><p>navigator</p>
+        navigator.userAgent
+        navigator.platform
+        navigator.appVersion
+        navigator.appName
+        navigator.onLine
+    </li>
+    <li><p>screen</p>
+        screen.width
+        screen.height
+    </li>
+    <li><p>history</p>
+        history.back()
+        hastory.forward()
+        hastory.go()//-1 0 1 2
+        history.pushState(state, title, url)//在history内新增一个历史记录，会增加后退效果，无刷新改变浏览器地址
+        history.replaceState()//无刷新改变浏览器地址，不会增加后退效果
+        history.state //返回当前页面的state对象
+
+        hashchange 监听历史记录
+        window.onhashchange = function(){
+            console.log(location.hash)
+        };
+        //hashchange事件必须绑定再widnow对象上
+
+        popstate: 当浏览记录出现变化时，会触发此事件，可以用此来监听url
+        window.onpopstate = function(event) { console.log(event.state);}
+        //event.state的值是history.state的值
+        调用pushState和replaceState事件不会触发popstate事件，当点击后退或者前进按钮时才触发，或者调用back、go、forward方法触发;
+    </li>
+
+
+</ul>
+<script type="text/javascript" src="/js/zepto-min.js"></script>
+</body>
+</html>

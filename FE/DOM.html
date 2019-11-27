@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>DOM</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content="DOM"/>
+    <meta name="description" content="DOM"/>
+    <meta name="format-detection" content="email=no,address=no,telephone=no"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui"/>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/demo.css"/>
+    <style type="text/css" rel="stylesheet">
+        li{ list-style: decimal}
+        p{ font-weight:bold; color:#369; font-size:16px;}
+        .demo-list{ padding-left:340px; padding-right:10px;}
+    </style>
+</head>
+<body>
+<ul class="demo-list">
+    <li><p>获取element</p>
+        document.getElementById('id')
+        document.getElementByClassName('class')
+        document.getElementByTagName('div')
+        document.getElementByName('name')
+        document.querySelectorAll('.class')
+        document.querySelector('#id')
+    </li>
+    <li><p>获取设置属性</p>
+        ele.className
+        ele.getAttribute('class')
+        ele.setAttribute('class','newClass')
+        ele.innerText
+        ele.innerHTML
+        ele.classList
+    </li>
+    <li>
+        <p>操作节点</p>
+        ele.nodeName
+        ele.nodeType
+        ele.nodeValue
+        ele.children
+        ele.childNodes
+        ele.parentElement
+        ele.appendChild()
+    </li>
+    <li>
+        <p>获取浏览器属性</p>
+        ele.clientWidth
+        ele.offsetWidth
+    </li>
+</ul>
+<script type="text/javascript" src="/js/zepto-min.js"></script>
+</body>
+</html>
