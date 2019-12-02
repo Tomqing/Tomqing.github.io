@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>vue知识点</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content="vue知识点"/>
+    <meta name="description" content="vue知识点"/>
+    <meta name="format-detection" content="email=no,address=no,telephone=no"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui"/>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/demo.css"/>
+    <style type="text/css" rel="stylesheet">
+        li img{ display:block; margin-bottom:50px;}
+        p{ font-weight:bold; color:#369; font-size:16px;}
+        .demo-list{ padding-left:340px; padding-right:10px; white-space: pre-wrap;}
+    </style>
+</head>
+<body>
+<div class="nav-list">
+    <a href="#list1">$event</a>
+    <a href="#list2">vue箭头函数</a>
+    <a href="#list3">ref</a>
+    <a href="#list4">事件修饰符</a>
+    <a href="#list5">键盘修饰符</a>
+    <a href="#list6">鼠标修饰符</a>
+    <a href="#list7">修饰键</a>
+    <a href="#list8">自定义按键修饰符别名</a>
+</div>
+<ul class="demo-list">
+    <li id="list1">
+        <p>$event</p>
+        <div class="pre">
+        自定义事件
+        &lt;ChildComponent :numbers="numbers" @book="numbers.push($event)" /&gt;
+        data: function(){
+            return {
+                numbers:[1,2,3,4,5]
+            }
+        }
+        原生事件
+        &lt;button v-on:click="warn('msg', $event)"&gt;Submit&lt;/button&gt;
+        methods: {
+            warn: function (msg, event) {
+                // 用来阻止默认事件
+                if (event) event.preventDefault()
+                alert(msg)
+            }
+        }
+        </div>
+    </li>
+    <li id="list2">
+        <p>vue的methods里面不能用箭头函数</p>
+        注意，不应该使用箭头函数来定义 method 函数 (例如 plus: () => this.a++)。理由是箭头函数绑定了父级作用域的上下文，所以 this 将不会按照期望指向 Vue 实例，this.a 将是 undefined。
+    </li>
+    <li id="list3">
+        <p>ref</p>
+        <input type="text" ref="text">
+        this.$refs.text.value
+        ref还可以直接调用子组件方法
+        this.$refs.tabSwiper.changeSwiper(this.tab_index);
+    </li>
+    <li id="list4">
+        <p>事件修饰符</p>
+        <b>.stop:</b>阻止冒泡
+        &lt;a v-on:click.stop="doThis"&gt;&lt;/a&gt;
+        <b>.prevent:</b>取消默认事件
+        &lt;form v-on:submit.prevent="onSubmit"&gt;&lt;/form&gt;
+        多个修饰符
+        &lt;a v-on:click.stop.prevent="doThat"&gt;&lt;/a&gt;
+        只有修饰符
+        &lt;form v-on:submit.prevent&gt;&lt;/form&gt;
+        <b>.capture:</b>捕获模式
+        即元素自身触发的事件先处理，然后才交由内部元素进行处理（由外而内）
+        &lt;div v-on:click.capture="doThis"&gt;...&lt;/div&gt;
+        <b>.self:</b>只当在 event.target 是当前元素自身时触发处理函数
+        即事件不是从内部元素触发的
+        &lt;div v-on:click.self="doThat"&gt;...&lt;/div&gt;
+        <b>.once:</b>点击事件将只会触发一次
+        &lt;a v-on:click.once="doThis"&gt;&lt;/a&gt;
+        滚动事件的默认行为 (即滚动行为) 将会立即触发 ， 而不会等待 onScroll 完成
+        这其中包含 event.preventDefault() 的情况
+        &lt;div v-on:scroll.passive="onScroll"&gt;...&lt;/div&gt;
+        <b>.passive:</b>Vue 还对应 addEventListener 中的 passive 选项提供了 .passive 修饰符。
+        滚动事件的默认行为 (即滚动行为) 将会立即触发
+        而不会等待 `onScroll` 完成
+        这其中包含 `event.preventDefault()` 的情况
+        &lt;div v-on:scroll.passive="onScroll"&gt;...&lt;/div&gt;
+    </li>
+    <li id="list5">
+        <p>键盘修饰符</p>
+        <b>.enter:</b>回车键
+        <b>.tab:</b>制表键
+        <b>.delete:</b>含delete和backspace键
+        <b>.esc:</b>返回键
+        <b>.space:</b>空格键
+        <b>.up:</b>向上键
+        <b>.down:</b>向下键
+        <b>.left:</b>向左键
+        <b>.right:</b>向右键
+    </li>
+    <li id="list6">
+        <p>鼠标修饰符</p>
+        <b>.left:</b>鼠标左键
+        <b>.middle:</b>鼠标中间滚轮
+        <b>.right:</b>鼠标右键
+    </li>
+    <li id="list7">
+        <p>修饰键</p>
+        <b>.ctrl</b>
+        <b>.alt</b>
+        <b>.shift</b>
+        <b>.meta</b>
+        注意：在 Mac 系统键盘上，meta 对应 command 键 (⌘)。在 Windows 系统键盘 meta 对应 Windows 徽标键 (⊞)。在 Sun 操作系统键盘上，meta 对应实心宝石键 (◆)。在其他特定键盘上，尤其在 MIT 和 Lisp 机器的键盘、以及其后继产品，比如 Knight 键盘、space-cadet 键盘，meta 被标记为“META”。在 Symbolics 键盘上，meta 被标记为“META”或者“Meta”。
+        例如：
+         Alt + C
+        &lt;input @keyup.alt.67="clear"&gt;
+         Ctrl + Click
+        &lt;div @click.ctrl="doSomething"&gt;Do something&lt;/div&gt;
+        请注意修饰键与常规按键不同，在和 keyup 事件一起用时，事件触发时修饰键必须处于按下状态。换句话说，只有在按住 ctrl 的情况下释放其它按键，才能触发 keyup.ctrl。而单单释放 ctrl 也不会触发事件。如果你想要这样的行为，请为 ctrl 换用 keyCode：keyup.17。
+        <b>.exact</b>
+        .exact 修饰符允许你控制由精确的系统修饰符组合触发的事件。
+
+        即使 Alt 或 Shift 被一同按下时也会触发
+        &lt;button @click.ctrl="onClick"&gt;A&lt;/button&gt;
+        有且只有 Ctrl 被按下的时候才触发
+        &lt;button @click.ctrl.exact="onCtrlClick"&gt;A&lt;/button&gt;
+        没有任何系统修饰符被按下的时候才触发
+        &lt;button @click.exact="onClick"&gt;A&lt;/button&gt;
+    </li>
+    <li id="list8">
+        <p>自定义按键修饰符别名</p>
+        在Vue中可以通过config.keyCodes自定义按键修饰符别名。例如，由于预先定义了keycode 116（即F5）的别名为f5，因此在文字输入框中按下F5，会触发prompt方法，出现alert。
+        <!-- HTML -->
+        &lt;div id="app"&gt;
+            &lt;input type="text" v-on:keydown.f5="prompt()"&gt;
+        &lt;/div&gt;
+        Vue.config.keyCodes.f5 = 116;
+        let app = new Vue({
+            el: '#app',
+            methods: {
+                prompt: function() {
+                    alert('我是 F5！');
+                }
+            }
+        });
+    </li>
+</ul>
+<script type="text/javascript" src="/js/zepto-min.js"></script>
+</body>
+</html>
