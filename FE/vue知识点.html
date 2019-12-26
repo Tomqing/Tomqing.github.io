@@ -26,6 +26,7 @@
     <a href="#list6">鼠标修饰符</a>
     <a href="#list7">修饰键</a>
     <a href="#list8">自定义按键修饰符别名</a>
+    <a href="#list9">子组件之间的数据传输</a>
 </div>
 <ul class="demo-list">
     <li id="list1">
@@ -144,6 +145,88 @@
                 }
             }
         });
+    </li>
+    <li id="list9">
+        <p>子组件之间的数据传输</p>
+        <a href="https://www.w3cplus.com/vue/managing-state-in-vue-js.html">Vue中的状态管理</a>
+            1、使用全局的EventBus
+                优点： 非常容易设置
+                缺点： 无法正确跟踪发生的变化
+            2、使用简单的全局存储
+                优点： 相对容易建立
+                缺点： 状态和可能的状态变化没有明确定义
+            3、使用类似于Flux库的Vuex
+                优点： 管理应用程序最强大的方法，并且与Vue开发工具集成在一起
+                缺点：额外的文件，需要花时间学习
+            4、main.js 中定义
+                // main.js 中定义
+                new Vue({
+                    router,
+                    data: function(){
+                        return {
+                            URL: 'http://localhost:8080',
+                        }
+                    },
+                    render: h => h(App)
+                }).$mount('#app');
+
+                // 需要的地方修改及引用
+                // 修改
+                this.$root.URL= "xxxxx"
+
+                // 引用
+                let URL = this.$root.URL
+    </li>
+    <li id="list10">
+        <p>自定义函数挂到全局方法</p>
+        方法一:使用Vue.prototype
+            //在mian.js中写入函数
+            Vue.prototype.getToken = function (){
+                ...
+            }
+            //在所有组件里可调用函数
+            this.getToken();
+        方法二:使用exports.install+Vue.prototype
+            // 写好自己需要的common.js文件
+            export default {
+                install(Vue)  {
+                    Vue.prototype.getToken = {
+                        ...
+                    }
+                }
+            }
+            // main.js 引入并使用
+            import common from './common'
+            Vue.use(common);
+            //在所有组件里可调用函数
+            this.getToken();
+        方法三：使用全局变量模块文件
+            Global.js文件：
+                const globaltest1 = 'globaltest1';
+                function getTestGlobal(msg){
+                    console.log(msg);
+                }
+                export default {
+                    globaltest1,
+                    getTestGlobal
+                }
+            在需要的地方引用进全局变量模块文件，然后通过文件里面的变量名字获取全局变量参数值。
+            &lt;script&gt;
+                import global from '../Global'//引用模块进来
+                export default {
+                    data () {
+                        return {
+                            token:global.globaltest1
+                        }
+                    },
+                    created: function() {
+                        global.getTestGlobal();
+                    }
+                }
+            &lt;/script&gt;
+    </li>
+    <li id="list11">
+        <p>自定义函数挂到全局方法</p>
     </li>
 </ul>
 <script type="text/javascript" src="/js/zepto-min.js"></script>

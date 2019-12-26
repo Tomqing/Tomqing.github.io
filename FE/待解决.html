@@ -19,7 +19,7 @@
 <body>
 <div class="nav-list">
     <a href="#list1">vue组件名称同名</a>
-    <a href="#list2"></a>
+    <a href="#list2">全局变量与局部变量没有双向绑定</a>
     <a href="#list3"></a>
     <a href="#list4"></a>
     <a href="#list5"></a>
@@ -29,8 +29,33 @@
         <p>vue组件名称跟原生html标签同名，如何解决？</p>
     </li>
     <li id="list2">
-        <p></p>
-
+        <p>全局变量更改后，引用页面data不变，页面也不重新渲染</p>
+            // global.js
+            export default {
+                maskFlag:false,
+                setMask(val){
+                    this.maskFlag = val;
+                }
+            }
+            // main.js
+            import global from './global'
+            Vue.prototype.global = global
+            // App.vue
+            {{maskFlag}}
+            &lt;button @click="setMaskFlag(num)"&gt;{{num}}&lt;/button&gt;
+            data:function(){
+                return {
+                    maskFlag: this.global.maskFlag,
+                    num:1
+                }
+            },
+            methods:{
+                setMaskFlag(val){
+                    console.log(val);
+                    this.global.setMask(val);
+                }
+            }
+            问题：点击后更改了maskFlag，但是页面上的maskFlag不更改
     </li>
 </ul>
 <script type="text/javascript" src="/js/zepto-min.js"></script>
