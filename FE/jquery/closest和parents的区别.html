@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>closest和parents的区别</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content="closest和parents的区别"/>
+    <meta name="description" content="closest和parents的区别"/>
+    <meta name="format-detection" content="email=no,address=no,telephone=no"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui"/>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/demo.css"/>
+    <style type="text/css" rel="stylesheet">
+        li{ list-style: decimal}
+        p{ font-weight:bold; color:#369; font-size:16px;}
+        .demo-list{ padding-left:340px; padding-right:10px;}
+    </style>
+</head>
+<body>
+<ul class="demo-list">
+    <li><p>closest和parents的区别</p>
+        <div class="code-box">
+            &lt;div class="box"&gt;
+                &lt;div class="list"&gt;
+                    &lt;div class="item"&gt;
+                        item1
+                    &lt;/div&gt;
+                    &lt;div class="item"&gt;
+                        item2
+                        &lt;div class="list"&gt;
+                            &lt;div class="item" id="test1"&gt;
+                                item2-1
+                            &lt;/div&gt;
+                            &lt;div class="item"&gt;
+                                item2-2
+                            &lt;/div&gt;
+                            &lt;div class="item"&gt;
+                                item2-3
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class="item"&gt;
+                        item3
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            $('#test1').closest('.item');//当前元素
+            $('#test1').parents('.item');//父级元素item
+            $('#test1').closest('.list');//父级元素list
+            $('#test1').parents('.list');//父级元素list集合
+            1、closest查找开始于自身，parents开始于元素父级
+            2、closest向上查找，直到找到一个匹配就停止查找，parents一直查找到根元素，并将匹配的元素加入集合
+            3、closest返回的是包含零个或一个元素的jquery对象，parents返回的是包含零个或一个或多个元素的jquery对象
+        </div>
+    </li>
+</ul>
+<script type="text/javascript" src="/js/zepto-min.js"></script>
+</body>
+</html>
