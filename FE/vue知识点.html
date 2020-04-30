@@ -27,6 +27,9 @@
     <a href="#list7">修饰键</a>
     <a href="#list8">自定义按键修饰符别名</a>
     <a href="#list9">子组件之间的数据传输</a>
+    <a href="#list10">自定义函数挂到全局方法</a>
+    <a href="#list11">构建指令</a>
+    <a href="#list12">vue绑定值与字符串拼接两种写法</a>
 </div>
 <ul class="demo-list">
     <li id="list1">
@@ -226,7 +229,41 @@
             &lt;/script&gt;
     </li>
     <li id="list11">
-        <p>自定义函数挂到全局方法</p>
+        <p>构建指令</p>
+        "vue-cli-service build --target lib --name tag-textarea --dest lib packages/index.js"
+        --name : 输出文件名
+        --dest : 输出目录，默认 dist
+        --target: 构建目标，默认为构建应用，改为 lib 即可启用构建库模式
+        [entry]: 最后一个参数为入口文件，默认为 src/App.vue。这里是packages/index.js
+    </li>
+    <li id="list12">
+        <p>vue绑定值与字符串拼接两种写法</p>
+        &lt;my-components :title="`标题:${item.title}`" link="/component/my-components" :my-desc="'门店地址:' + item.desc"&gt;&lt;/my-components&gt;
+
+        第一种
+        :title="`标题${xxx}`"
+
+        第二种
+        :title="'标题' + xxx"
+        //&lt;img :src="require(`../assets/${ss[1]}.svg`)" alt="" /&gt;
+    </li>
+    <li id="list13">
+        <p>Vue中的图片引用路径的方式</p>
+        1.
+            &lt;img src="./assets/logo.png"&gt;
+        2.
+            &lt;img :src="logoSrc"&gt;
+            import logoSrc from './assets/logo.png'
+            data () {
+                return {
+                    logoSrc: logoSrc
+                }
+            }
+        3.
+            &lt;img :src='require("./assets/logo.png")'&gt;
+    </li>
+    <li id="list14">
+        <p></p>
     </li>
 </ul>
 <script type="text/javascript" src="/js/zepto-min.js"></script>
