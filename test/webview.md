@@ -1,4 +1,6 @@
 # WKWebVIew前端调用文档
+***此文档仅限于IOS升级WKWebVIew后有效***  
+
     所有方法都挂载到JiaAppObj对象上，这个对象会在wapCommon.js创建
     没有引用wapCommon.js的自行创建
 ## **跳转**
@@ -33,7 +35,8 @@ JiaAppObj.backAccept = function(obj){
 ```
 
 ### appShareFn  
-传输分享数据方法, 用户分享的时候原生端调用, 如存在此方法, 则页面默认显示分享icon, 不用手动触发shareEnable
+传输分享数据方法, 用户分享的时候原生端调用, 如存在此方法, 则页面默认显示分享icon, 不用手动触发shareEnable  
+[jia_share.js](https://mued2.jia.com/js/mobile/activity/jia_share.min.js)中实现
 ```
 JiaAppObj.appShareFn = function(){
         return {
