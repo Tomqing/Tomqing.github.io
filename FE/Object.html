@@ -35,6 +35,7 @@
     <a href="#object_13">defineProperties</a>
     <a href="#object_14">getOwnPropertyDescriptor</a>
     <a href="#object_15">getOwnPropertyDescriptors</a>
+    <a href="#object_16">属性的遍历</a>
 </div>
 <div class="demo-list">
     <p class="title" id="object_1">new运算符具体干了什么</p>
@@ -249,9 +250,56 @@
         //    writable: true
         //}
     </div>
-    <p class="title" id="object_16"></p>
+    <p class="title" id="object_16">属性的遍历</p>
     <div class="pre">
+      （1）for...in
 
+      for...in循环遍历对象自身的和继承的可枚举属性（不含 Symbol 属性）。
+
+      （2）Object.keys(obj)
+
+      Object.keys返回一个数组，包括对象自身的（不含继承的）所有可枚举属性（不含 Symbol 属性）的键名。
+
+      （3）Object.getOwnPropertyNames(obj)
+
+      Object.getOwnPropertyNames返回一个数组，包含对象自身的所有属性（不含 Symbol 属性，但是包括不可枚举属性）的键名。
+
+      （4）Object.getOwnPropertySymbols(obj)
+
+      Object.getOwnPropertySymbols返回一个数组，包含对象自身的所有 Symbol 属性的键名。
+
+      （5）Reflect.ownKeys(obj)
+      Reflect.ownKeys返回一个数组，包含对象自身的（不含继承的）所有键名，不管键名是 Symbol 或字符串，也不管是否可枚举。
+
+
+      Object.assign()
+      Object.assign()方法用于对象的合并，将源对象（source）的所有可枚举属性，复制到目标对象（target）。
+
+      Object.keys()
+      返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键名。
+      var obj = { foo: 'bar', baz: 42 };
+      Object.keys(obj)
+      // ["foo", "baz"]
+
+      Object.values()
+      返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值。
+      const obj = { foo: 'bar', baz: 42 };
+      Object.values(obj)
+      // ["bar", 42]
+
+      Object.entries()
+      返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值对数组。
+      const obj = { foo: 'bar', baz: 42 };
+      Object.entries(obj)
+      // [ ["foo", "bar"], ["baz", 42] ]
+
+      Object.fromEntries()
+      Object.entries()的逆操作，用于将一个键值对数组转为对象。
+      Object.fromEntries([
+        ['foo', 'bar'],
+        ['baz', 42]
+      ])
+      // { foo: "bar", baz: 42 }
     </div>
     <p class="title" id="object_17"></p>
     <div class="pre">
