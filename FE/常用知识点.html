@@ -20,6 +20,16 @@
     <li><p>获取n到m之间的随机整数</p>
         Math.round(Math.random()*(m-n)+n)
     </li>
+    <li><p>数组去重</p>
+        1、const newArr = [...new Set(arr)];
+        2、const newArr = Array.from(new Map(array.map(item => [item, item])).values());
+        3、const newArr = array.filter((item, index, self) => {
+            retrun self.indexOf(item) === index;
+        })
+        4、const newArr = array.reduce((acc, current) => {
+            return acc.includes(current) ? acc : [...acc, current];
+        }, [])
+    </li>
     <li>
         <p>绑定事件时event+传参</p>
         function func(e,x,y){
