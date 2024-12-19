@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>常用知识点</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content="JavaScript常用知识点"/>
+    <meta name="description" content="JavaScript常用知识点"/>
+    <meta name="format-detection" content="email=no,address=no,telephone=no"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui"/>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/demo.css"/>
+    <style type="text/css" rel="stylesheet">
+        li{ white-space: pre-wrap; list-style: decimal}
+        p{ font-weight:bold; color:#369; font-size:16px;}
+    </style>
+</head>
+<body>
+<ul class="demo-list">
+    <li><p>基础配置详解</p>
+        # 配置别名，简化命令
+        git config --global alias.st status
+        git config --global alias.co checkout
+        git config --global alias.br branch
+        git config --global alias.ci commit
+
+        # 设置默认编辑器
+        git config --global core.editor vim
+
+        # 配置差异化工具
+        git config --global merge.tool vimdiff
+
+        # 设置忽略文件权限变化
+        git config core.fileMode false
+
+        # 配置自动换行
+        git config --global core.autocrlf input  # Linux/Mac
+        git config --global core.autocrlf true   # Windows
+    </li>
+    <li><p>文件操作进阶</p>
+        # 查看详细变化
+        git status -s               # 简短格式显示状态
+        git diff                    # 查看未暂存的改动
+        git diff --staged          # 查看已暂存的改动
+        git diff <分支1> <分支2>    # 查看两个分支的差异
+
+        # 提交相关
+        git commit -am "提交说明"    # 合并add和commit操作
+        git commit --amend         # 修改最后一次提交
+        git commit --no-verify     # 跳过预提交钩子
+
+        # 删除文件
+        git rm <文件名>             # 从版本库中删除文件
+        git rm --cached <文件名>    # 从版本库中删除，但保留本地文件
+
+        # 移动/重命名文件
+        git mv <原文件名> <新文件名>
+    </li>
+    <li>
+        <p>日志查看技巧</p>
+        # 查看提交历史
+        git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
+        git log -p <文件名>         # 查看指定文件的修改历史
+        git log -S "关键字"         # 搜索提交历史中的关键字
+        git blame <文件名>          # 查看文件的每一行是谁修改的
+
+        # 查看操作记录
+        git reflog                 # 查看所有操作记录，包括已经删除的提交记录
+    </li>
+    <li>
+        <p>分支管理高级操作</p>
+        # 分支重命名
+        git branch -m <旧名称> <新名称>
+
+        # 批量删除分支
+        git branch | grep "feature/" | xargs git branch -D  # 删除所有feature/开头的分支
+
+        # 分支合并策略
+        git merge --squash <分支名>   # 将目标分支的所有提交合并为一个提交
+        git merge --no-ff <分支名>    # 保留分支信息的合并
+        git rebase <分支名>           # 变基合并，使提交历史更加整洁
+
+        # cherry-pick操作
+        git cherry-pick <提交ID>      # 将指定提交应用到当前分支
+    </li>
+    <li>
+        <p>远程仓库高级操作</p>
+        # 远程仓库管理
+        git remote rename <旧名称> <新名称>  # 修改远程仓库名称
+        git remote set-url origin <新地址>   # 修改远程仓库地址
+
+        # 推送操作
+        git push --force-with-lease        # 安全的强制推送
+        git push -u origin --all          # 推送所有分支
+        git push --tags                   # 推送所有标签
+
+        # 拉取操作
+        git pull --rebase                 # 使用rebase模式拉取
+        git fetch --prune                # 抓取远程并清理已删除的远程分支
+    </li>
+    <li>
+        <p>工作区管理</p>
+        # 暂存操作
+        git stash save "暂存说明"          # 添加备注暂存
+        git stash list                    # 查看暂存列表
+        git stash apply stash@{0}         # 应用指定的暂存
+        git stash drop stash@{0}          # 删除指定的暂存
+        git stash clear                   # 清空所有暂存
+
+        # 清理工作区
+        git clean -n                      # 列出要清理的文件
+        git clean -f                      # 强制清理未跟踪的文件
+        git clean -fd                     # 强制清理未跟踪的文件和目录
+    </li>
+    <li>
+        <p>补丁管理</p>
+        # 创建补丁
+        git format-patch HEAD^            # 创建最后一次提交的补丁
+        git format-patch -n HEAD^         # 创建最后n次提交的补丁
+        
+        # 应用补丁
+        git apply <补丁文件>              # 应用补丁
+        git am <补丁文件>                 # 应用邮件格式的补丁
+    </li>
+    <li>
+        <p>子模块管理</p>
+        # 添加子模块
+        git submodule add <仓库地址> <路径>
+
+        # 更新子模块
+        git submodule init               # 初始化子模块
+        git submodule update            # 更新子模块
+        git submodule update --remote   # 更新子模块到最新版本
+    </li>
+    <li>
+        <p>高级技巧</p>
+        # 批量修改提交信息
+        git filter-branch --commit-filter '
+            if [ "$GIT_AUTHOR_EMAIL" = "old@email.com" ];
+            then
+                GIT_AUTHOR_NAME="New Name";
+                GIT_AUTHOR_EMAIL="new@email.com";
+                git commit-tree "$@";
+            else
+                git commit-tree "$@";
+            fi' HEAD
+
+        # 仓库瘦身
+        git gc                          # 垃圾收集
+        git prune                      # 删除无用对象
+        git fsck                       # 完整性检查
+    </li>
+    <li>
+        <p>实用配置建议</p>
+        1.配置全局 .gitignore：
+        git config --global core.excludesfile ~/.gitignore_global
+        2.常用的 .gitignore 内容：
+        *.log
+        *.tmp
+        .DS_Store
+        node_modules/
+        dist/
+        .env
+        3.设置命令别名：
+        # 在 ~/.bashrc 或 ~/.zshrc 中添加
+        alias gst='git status'
+        alias gaa='git add .'
+        alias gcm='git commit -m'
+        alias gco='git checkout'
+        alias gpl='git pull'
+        alias gps='git push'
+    </li>
+</ul>
+<script type="text/javascript" src="/js/zepto-min.js"></script>
+</body>
+</html>
