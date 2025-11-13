@@ -10,7 +10,7 @@
 .w-100{ width:100%;}
 .mr-50{ margin-right:50px;}
 
-.nav-list{ position:fixed; left:50px; top:50px; padding:10px 0; background:rgba(0,0,0,.06);}
+.nav-list{ position:fixed; left:50px; top:50px; padding:10px 0; background:rgba(0,0,0,.06); overflow: auto;}
 .nav-list a{ display:block; padding:5px 20px; color:#369; white-space: nowrap;}
 .nav-list a:hover{ color:#EE2D1B;}
 

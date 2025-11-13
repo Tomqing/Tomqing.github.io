@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>Math对象常用的方法</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content="Math对象常用的方法"/>
+    <meta name="description" content="Math对象常用的方法"/>
+    <meta name="format-detection" content="email=no,address=no,telephone=no"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui"/>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/demo.css"/>
+    <style type="text/css" rel="stylesheet">
+        li{ white-space: pre-wrap; list-style: decimal}
+        p{ font-weight:bold; color:#369; font-size:16px;}
+    </style>
+</head>
+<body>
+<ul class="demo-list">
+    <li id="concat"><p>Number.isFinite()</p>
+        用来检查一个数值是否为有限的（finite），即不是Infinity
+        <div class="code-box">
+            Number.isFinite(Infinity); // false
+            Number.isFinite(-Infinity); // false
+        </div>
+    </li>
+    <li id="concat"><p>Number.isNaN()</p>
+        用来检查一个值是否为NaN
+        <div class="code-box">
+            Number.isNaN(NaN) // true
+        </div>
+    </li>
+    <li id="concat"><p>Number.parseInt()</p>
+        Number.parseInt === parseInt // true
+    </li>
+    <li id="concat"><p>Number.parseFloat()</p>
+        Number.parseFloat === parseFloat // true
+    </li>
+    <li id="concat"><p>Number.isInteger()</p>
+        判断一个数值是否为整数
+    </li>
+    <li id="concat"><p>Number.isSafeInteger()</p>
+        JavaScript 能够准确表示的整数范围在-2^53到2^53之间（不含两个端点），超过这个范围，无法精确表示这个值。
+        Number.isSafeInteger()则是用来判断一个整数是否落在这个范围之内
+        <div class="code-box">
+            Number.MAX_SAFE_INTEGER === Math.pow(2, 53) - 1
+            // true
+            Number.MAX_SAFE_INTEGER === 9007199254740991
+            // true
+            Number.MIN_SAFE_INTEGER === -Number.MAX_SAFE_INTEGER
+            // true
+            Number.MIN_SAFE_INTEGER === -9007199254740991
+            // true
+            Number.isSafeInteger(9007199254740990) // true
+            Number.isSafeInteger(9007199254740992) // false
+        </div>
+    </li>
+    
+    <li id="concat"><p>Math.trunc()</p>
+        去除一个数的小数部分，返回整数部分
+    </li>
+    <li id="concat"><p>Math.sqrt()</p>
+        计算一个数的平方根
+    </li>
+    <li id="concat"><p>Math.cbrt()</p>
+        计算一个数的立方根
+    </li>
+    <li id="concat"><p>Math.hypot()</p>
+        返回所有参数的平方和的平方根
+        <div class="code-box">
+            Math.hypot(3, 4, 'foo'); // NaN
+            Math.hypot(3, 4, '5');   // 7.0710678118654755
+        </div>
+    </li>
+    
+</ul>
+<script type="text/javascript" src="/js/zepto-min.js"></script>
+</body>
+</html>

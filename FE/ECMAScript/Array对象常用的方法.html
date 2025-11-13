@@ -45,6 +45,7 @@
     <a href="#values">values</a>
     <a href="#entries">entries</a>
     <a href="#includes">includes</a>
+    <a href="#at">at</a>
 </div>
 <ul class="demo-list">
     <li id="concat"><p>concat()</p>
@@ -291,6 +292,23 @@
             [1, 2, 3, NaN].includes(3, 3);  // false
             [1, 2, 3, NaN].includes(3, -2); // true
             [1, 2, 3, NaN].includes(NaN); // true
+        </div>
+    </li>
+    <li id="at"><p>at()</p>
+        语法：arr.at(0)
+        输入值： 接受一个整数作为参数，返回对应位置的成员，并支持负索引
+        功能：这个方法不仅可用于数组，也可用于字符串和类型数组（TypedArray）
+        返回值：返回对应位置的成员
+        不改变原数组
+        <div class="code-box">
+            const arr = [5, 12, 8, 130, 44];
+            arr.at(2) // 8
+            arr.at(-2) // 130
+            const sentence = 'This is a sample sentence';
+            sentence.at(0); // 'T'
+            sentence.at(-1); // 'e'
+            sentence.at(-100) // undefined
+            sentence.at(100) // undefined
         </div>
     </li>
 </ul>

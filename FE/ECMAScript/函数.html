@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>函数</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content="函数"/>
+    <meta name="description" content="函数"/>
+    <meta name="format-detection" content="email=no,address=no,telephone=no"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui"/>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/demo.css"/>
+    <style type="text/css" rel="stylesheet">
+        li{ white-space: pre-wrap; list-style: decimal}
+        p{ font-weight:bold; color:#369; font-size:16px;}
+    </style>
+</head>
+<body>
+<ul class="demo-list">
+    <li id="concat"><p>箭头函数</p>
+        由于大括号被解释为代码块，所以如果箭头函数直接返回一个对象，必须在对象外面加上括号
+        <div class="code-box">
+            let getTempItem = id => ({ id: id, name: "Temp" });
+        </div>
+    </li>
+    <li id="concat"><p>Number.isNaN()</p>
+        用来检查一个值是否为NaN
+        <div class="code-box">
+            Number.isNaN(NaN) // true
+        </div>
+    </li>
+</ul>
+<script type="text/javascript" src="/js/zepto-min.js"></script>
+</body>
+</html>
